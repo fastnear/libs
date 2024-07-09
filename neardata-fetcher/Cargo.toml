@@ -10,11 +10,9 @@ publish = true
 
 [dependencies]
 reqwest.workspace = true
-near-indexer-primitives.workspace = true
-near-primitives.workspace = true
 serde.workspace = true
 tokio.workspace = true
 tracing.workspace = true
 
-fastnear-primitives = { version = "0.0.1", path = "../primitives" }
+fastnear-primitives = { version = "0.0.2", path = "../primitives" }
 

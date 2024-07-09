@@ -1,13 +1,13 @@
 use fastnear_primitives::block_with_tx_hash::BlockWithTxHashes;
+use fastnear_primitives::near_primitives::types::BlockHeight;
 use fastnear_primitives::types::ChainId;
-use near_primitives::types::BlockHeight;
 use reqwest::Client;
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::Arc;
 use std::time::Duration;
 use tokio::sync::mpsc;
 
-const PROJECT_ID: &str = "neardata-fetcher";
+const LOG_TARGET: &str = "neardata-fetcher";
 
 pub type BlockResult = Result<Option<BlockWithTxHashes>, FetchError>;
 
@@ -45,7 +45,7 @@ pub async fn fetch_block_until_success(
         match fetch_block(client, url, timeout).await {
             Ok(block) => return block,
             Err(FetchError::ReqwestError(err)) => {
-                tracing::log::warn!("Failed to fetch block: {}", err);
+                tracing::log::warn!(target: LOG_TARGET, "Failed to fetch block: {}", err);
                 tokio::time::sleep(Duration::from_secs(1)).await;
             }
         }
@@ -116,7 +116,7 @@ pub async fn start_fetcher(
         let is_backfill = last_block_height > start_block_height + max_num_threads;
         let num_threads = if is_backfill { max_num_threads } else { 1 };
         tracing::log::info!(
-            target: PROJECT_ID,
+            target: LOG_TARGET,
             "Start fetching from block {} to block {} with {} threads. Backfill: {:?}",
             start_block_height,
             last_block_height,
@@ -138,7 +138,7 @@ pub async fn start_fetcher(
                         if is_backfill && block_height > last_block_height {
                             break;
                         }
-                        tracing::log::debug!(target: PROJECT_ID, "#{}: Fetching block: {}", thread_index, block_height);
+                        tracing::log::debug!(target: LOG_TARGET, "#{}: Fetching block: {}", thread_index, block_height);
                         let block =
                             fetch_block_by_height(&client, block_height, DEFAULT_TIMEOUT, chain_id).await;
                         while is_running.load(Ordering::SeqCst) {
@@ -149,7 +149,7 @@ pub async fn start_fetcher(
                                 ))
                                 .await;
                             } else {
-                                tracing::log::debug!(target: PROJECT_ID, "#{}: Sending block: {}", thread_index, block_height);
+                                tracing::log::debug!(target: LOG_TARGET, "#{}: Sending block: {}", thread_index, block_height);
                                 break;
                             }
                         }
@@ -159,7 +159,7 @@ pub async fn start_fetcher(
                         if let Some(block) = block {
                             blocks_sink.send(block).await.expect("Failed to send block");
                         } else {
-                            tracing::log::debug!(target: PROJECT_ID, "#{}: Skipped block: {}", thread_index, block_height);
+                            tracing::log::debug!(target: LOG_TARGET, "#{}: Skipped block: {}", thread_index, block_height);
                         }
                         next_sink_block.fetch_add(1, Ordering::SeqCst);
                     }
