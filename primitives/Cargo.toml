@@ -1,0 +1,14 @@
+[package]
+name = "fastnear-primitives"
+description = "This crate provides the base set of primitives used by other fastnear crates"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+repository.workspace = true
+license.workspace = true
+publish = true
+
+[dependencies]
+near-indexer-primitives.workspace = true
+near-primitives.workspace = true
+serde.workspace = true

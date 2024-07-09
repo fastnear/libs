@@ -1,0 +1,20 @@
+[package]
+name = "fastnear-neardata-fetcher"
+description = "This crate provides a fetcher to retrieve data from neardata.xyz"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+repository.workspace = true
+license.workspace = true
+publish = true
+
+[dependencies]
+reqwest.workspace = true
+near-indexer-primitives.workspace = true
+near-primitives.workspace = true
+serde.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+
+fastnear-primitives = { version = "0.0.1", path = "../primitives" }
+

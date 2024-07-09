@@ -1,0 +1,24 @@
+[workspace.package]
+version = "0.0.1"
+authors = ["Fastnear Inc <hello@fastnear.com>"]
+edition = "2021"
+repository = "https://github.com/fastnear/libs"
+rust-version = "1.77.0"
+license = "MIT OR Apache-2.0"
+
+[workspace]
+resolver = "2"
+members = [
+    "neardata-fetcher",
+    "primitives"
+]
+
+[workspace.dependencies]
+near-indexer-primitives = "0.23"
+near-primitives = "0.23"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+serde_repr = "0.1"
+reqwest = { version = "0.12.2", features = ["json"] }
+tokio = { version = "1.38", features = ["time", "sync", "rt-multi-thread"] }
+tracing = { version = "0.1.13", features = ["log"] }
