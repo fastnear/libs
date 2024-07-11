@@ -7,3 +7,4 @@ mod rpc;
 
 #[cfg(feature = "statedump")]
 mod dump;
+mod storage;

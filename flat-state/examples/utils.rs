@@ -45,3 +45,16 @@ pub fn print_account_info(state: &FlatState, account_id: &AccountId) {
         state.data.data.get(account_id).map_or(0, |d| d.len())
     );
 }
+
+pub fn print_state_info(state: &FlatState) {
+    println!("Block Hash: {}", state.block_hash);
+    println!("Block Height: {}", state.block_header.height);
+
+    println!("Num Accounts: {}", state.data.accounts.len());
+
+    if state.data.accounts.len() > 0 {
+        let account_id = state.data.accounts.keys().next().unwrap();
+        println!("First Account: {}", account_id);
+        print_account_info(&state, account_id);
+    }
+}

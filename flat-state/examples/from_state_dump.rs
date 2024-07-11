@@ -13,16 +13,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .await
         .map_err(|e| format!("{:?}", e))?;
 
-    println!("Block Hash: {}", state.block_hash);
-    println!("Block Height: {}", state.block_header.height);
-
-    println!("Num Accounts: {}", state.data.accounts.len());
-
-    if state.data.accounts.len() > 0 {
-        let account_id = state.data.accounts.keys().next().unwrap();
-        println!("First Account: {}", account_id);
-        utils::print_account_info(&state, account_id);
-    }
+    utils::print_state_info(&state);
 
     Ok(())
 }

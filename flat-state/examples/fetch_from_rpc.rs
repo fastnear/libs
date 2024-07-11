@@ -34,5 +34,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     utils::print_account_info(&state, &account_id);
 
+    // state
+    //     .save("./res/v1/state.borsh")
+    //     .expect("Failed to save state");
+
     Ok(())
 }

@@ -8,6 +8,7 @@ use fastnear_primitives::near_primitives::views::BlockHeaderInnerLiteView;
 use fastnear_primitives::types::ChainId;
 use fastnear_primitives::utils::state_change_account_id;
 use serde::{Deserialize, Serialize};
+use std::fmt::Display;
 
 pub(crate) const LOG_TARGET: &str = "flat-state";
 
@@ -21,6 +22,21 @@ pub enum FlatStateError {
     RpcError(String),
     #[cfg(feature = "statedump")]
     StateDumpError(String),
+    StorageError(String),
+}
+
+impl Display for FlatStateError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            FlatStateError::BlockHashMismatch => write!(f, "Block hash mismatch"),
+            FlatStateError::FilterError(e) => write!(f, "Filter error: {}", e),
+            #[cfg(feature = "rpc")]
+            FlatStateError::RpcError(e) => write!(f, "RPC error: {}", e),
+            #[cfg(feature = "statedump")]
+            FlatStateError::StateDumpError(e) => write!(f, "State dump error: {}", e),
+            FlatStateError::StorageError(e) => write!(f, "Storage error: {}", e),
+        }
+    }
 }
 
 #[derive(Debug, Clone, BorshSerialize, BorshDeserialize, Serialize, Deserialize)]
@@ -29,6 +45,7 @@ pub struct FlatStateConfig {
     pub filter: FlatStateFilter,
 }
 
+#[derive(Debug, Clone)]
 pub struct FlatState {
     pub config: FlatStateConfig,
 
