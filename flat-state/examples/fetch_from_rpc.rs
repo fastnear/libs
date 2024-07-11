@@ -17,6 +17,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let rpc_url = utils::input("Enter RPC URL", Some(utils::DEFAULT_RPC_URL))?;
     let account_id = AccountId::try_from(utils::input("Enter account ID", Some("first.tkn.near"))?)
         .expect("Invalid account ID");
+    let save_state_path = utils::input("Enter path to save state (optional)", None)?;
+
+    println!("Fetching state...");
 
     let state = FlatState::fetch_from_rpc(
         FlatStateConfig {
@@ -34,9 +37,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     utils::print_account_info(&state, &account_id);
 
-    // state
-    //     .save("./res/v1/state.borsh")
-    //     .expect("Failed to save state");
+    if !save_state_path.is_empty() {
+        println!("Saving state...");
+        state
+            .save(&save_state_path)
+            .map_err(|e| format!("{:?}", e))?;
+        println!("State saved to: {}", save_state_path);
+    }
 
     Ok(())
 }

@@ -9,15 +9,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let path = tempfile::NamedTempFile::new()?.into_temp_path();
     state.save(path.to_str().unwrap()).unwrap();
 
-    let state2 = FlatState::load(path.to_str().unwrap()).unwrap();
+    let state_loaded = FlatState::load(path.to_str().unwrap()).unwrap();
 
     assert_eq!(
         format!("{:?}", state),
-        format!("{:?}", state2),
+        format!("{:?}", state_loaded),
         "Saved and loaded states don't match"
     );
 
-    utils::print_state_info(&state2);
+    utils::print_state_info(&state_loaded);
 
     Ok(())
 }
