@@ -1,5 +1,9 @@
-mod data;
+pub mod data;
 pub mod filter;
+pub mod state;
+
 #[cfg(feature = "rpc")]
 mod rpc;
-pub mod state;
+
+#[cfg(feature = "statedump")]
+mod dump;

@@ -15,20 +15,30 @@ tokio.workspace = true
 tracing.workspace = true
 borsh.workspace = true
 near-crypto.workspace = true
+serde_json.workspace = true
+serde_with.workspace = true
+
+near-chain-configs = { workspace = true, optional = true }
+
 near-jsonrpc-client = { workspace = true, optional = true }
 near-jsonrpc-primitives = { workspace = true, optional = true }
 
 fastnear-primitives = { version = "0.0.3", path = "../primitives" }
-fastnear-neardata-fetcher = { version = "0.0.3", path = "../neardata-fetcher" }
+fastnear-neardata-fetcher = { version = "0.0.3", path = "../neardata-fetcher", optional = true }
 
 [dev-dependencies]
 tokio = { version = "1.0", features = ["macros", "rt-multi-thread"] }
 env_logger = "0.11.0"
 
 [features]
-default = ["rpc"]
+default = ["rpc", "statedump"]
+statedump = ["fastnear-neardata-fetcher", "near-chain-configs"]
 rpc = ["near-jsonrpc-client", "near-jsonrpc-primitives"]
 
 [[example]]
 name = "fetch_from_rpc"
 required-features = ["rpc"]
+
+[[example]]
+name = "from_state_dump"
+required-features = ["statedump"]

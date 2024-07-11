@@ -9,7 +9,7 @@ use fastnear_primitives::types::ChainId;
 use fastnear_primitives::utils::state_change_account_id;
 use serde::{Deserialize, Serialize};
 
-const LOG_TARGET: &str = "flat-state";
+pub(crate) const LOG_TARGET: &str = "flat-state";
 
 pub type FlatStateResult<T> = Result<T, FlatStateError>;
 
@@ -19,12 +19,13 @@ pub enum FlatStateError {
     FilterError(String),
     #[cfg(feature = "rpc")]
     RpcError(String),
+    #[cfg(feature = "statedump")]
+    StateDumpError(String),
 }
 
 #[derive(Debug, Clone, BorshSerialize, BorshDeserialize, Serialize, Deserialize)]
 pub struct FlatStateConfig {
     pub chain_id: ChainId,
-    pub storage_path: Option<String>,
     pub filter: FlatStateFilter,
 }
 
@@ -58,7 +59,7 @@ impl FlatState {
                     .filter
                     .is_account_allowed(state_change_account_id(&state_change.value))
                 {
-                    self.data.apply_state_update(state_change.value);
+                    self.data.apply_state_change(state_change.value);
                 }
             }
         }

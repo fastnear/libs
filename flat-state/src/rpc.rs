@@ -201,7 +201,7 @@ impl FlatState {
         }
         let mut data = FlatStateData::default();
         for state_change_value in state_change_values {
-            data.apply_state_update(state_change_value);
+            data.apply_state_change(state_change_value);
         }
 
         Ok(Self {

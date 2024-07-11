@@ -21,7 +21,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let state = FlatState::fetch_from_rpc(
         FlatStateConfig {
             chain_id,
-            storage_path: None,
             filter: FlatStateFilter::from_accounts(&[account_id.clone()]),
         },
         rpc_url,
@@ -33,27 +32,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("Block Hash: {}", state.block_hash);
     println!("Block Height: {}", state.block_header.height);
 
-    println!("Account: {:#?}", state.data.accounts.get(&account_id));
-    println!(
-        "Num Access keys: {}",
-        state
-            .data
-            .access_keys
-            .get(&account_id)
-            .map_or(0, |d| d.len())
-    );
-    println!(
-        "Contract code length: {}",
-        state
-            .data
-            .contracts_code
-            .get(&account_id)
-            .map_or(0, |d| d.len())
-    );
-    println!(
-        "Num Data keys: {}",
-        state.data.data.get(&account_id).map_or(0, |d| d.len())
-    );
+    utils::print_account_info(&state, &account_id);
 
     Ok(())
 }

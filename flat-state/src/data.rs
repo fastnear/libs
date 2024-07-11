@@ -14,7 +14,7 @@ pub struct FlatStateData {
 }
 
 impl FlatStateData {
-    pub fn apply_state_update(&mut self, state_change_value: StateChangeValueView) {
+    pub fn apply_state_change(&mut self, state_change_value: StateChangeValueView) {
         match state_change_value {
             StateChangeValueView::AccountUpdate {
                 account_id,

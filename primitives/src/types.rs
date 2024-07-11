@@ -12,6 +12,7 @@ use std::fmt::Display;
     serde::Serialize,
     serde::Deserialize,
 )]
+#[serde(rename_all = "lowercase")]
 pub enum ChainId {
     Mainnet,
     Testnet,

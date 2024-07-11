@@ -31,6 +31,10 @@ pub struct FetcherConfig {
     pub chain_id: ChainId,
 }
 
+pub fn new_reqwest_client() -> Client {
+    Client::new()
+}
+
 pub async fn fetch_block(client: &Client, url: &str, timeout: Duration) -> BlockResult {
     let response = client.get(url).timeout(timeout).send().await?;
     Ok(response.json().await?)
