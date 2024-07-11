@@ -16,6 +16,9 @@ pub type FlatStateResult<T> = Result<T, FlatStateError>;
 #[derive(Debug, Clone)]
 pub enum FlatStateError {
     BlockHashMismatch,
+    FilterError(String),
+    #[cfg(feature = "rpc")]
+    RpcError(String),
 }
 
 #[derive(Debug, Clone, BorshSerialize, BorshDeserialize, Serialize, Deserialize)]
@@ -26,12 +29,12 @@ pub struct FlatStateConfig {
 }
 
 pub struct FlatState {
-    config: FlatStateConfig,
+    pub config: FlatStateConfig,
 
-    block_header: BlockHeaderInnerLiteView,
-    block_hash: CryptoHash,
+    pub block_header: BlockHeaderInnerLiteView,
+    pub block_hash: CryptoHash,
 
-    data: FlatStateData,
+    pub data: FlatStateData,
 }
 
 impl FlatState {

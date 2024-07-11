@@ -7,10 +7,10 @@ use std::collections::{BTreeMap, HashMap};
 
 #[derive(Default, Debug, Clone, BorshSerialize, BorshDeserialize)]
 pub struct FlatStateData {
-    access_keys: HashMap<AccountId, BTreeMap<PublicKey, AccessKey>>,
-    accounts: HashMap<AccountId, Account>,
-    data: HashMap<AccountId, BTreeMap<Vec<u8>, Vec<u8>>>,
-    contracts_code: HashMap<AccountId, Vec<u8>>,
+    pub access_keys: HashMap<AccountId, BTreeMap<PublicKey, AccessKey>>,
+    pub accounts: HashMap<AccountId, Account>,
+    pub data: HashMap<AccountId, BTreeMap<Vec<u8>, Vec<u8>>>,
+    pub contracts_code: HashMap<AccountId, Vec<u8>>,
 }
 
 impl FlatStateData {

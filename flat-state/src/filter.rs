@@ -5,8 +5,8 @@ use std::collections::HashSet;
 
 #[derive(Debug, Clone, BorshSerialize, BorshDeserialize, Serialize, Deserialize)]
 pub struct FlatStateFilter {
-    accounts: HashSet<AccountId>,
-    account_ranges: Vec<(Option<AccountId>, Option<AccountId>)>,
+    pub accounts: HashSet<AccountId>,
+    pub account_ranges: Vec<(Option<AccountId>, Option<AccountId>)>,
 }
 
 impl FlatStateFilter {
@@ -24,12 +24,11 @@ impl FlatStateFilter {
         }
     }
 
-    pub fn add_account(&mut self, account: AccountId) {
-        self.accounts.insert(account);
-    }
-
-    pub fn add_account_range(&mut self, start: Option<AccountId>, end: Option<AccountId>) {
-        self.account_ranges.push((start, end));
+    pub fn from_accounts(accounts: &[AccountId]) -> Self {
+        Self {
+            accounts: accounts.iter().cloned().collect(),
+            account_ranges: Vec::new(),
+        }
     }
 
     pub fn is_account_allowed(&self, account: &AccountId) -> bool {
