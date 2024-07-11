@@ -10,7 +10,7 @@ pub struct FlatStateFilter {
 }
 
 impl FlatStateFilter {
-    pub fn new() -> Self {
+    pub fn empty() -> Self {
         Self {
             accounts: HashSet::new(),
             account_ranges: Vec::new(),
