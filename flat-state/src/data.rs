@@ -3,13 +3,13 @@ use fastnear_primitives::near_indexer_primitives::types::AccountId;
 use fastnear_primitives::near_primitives::account::{AccessKey, Account};
 use fastnear_primitives::near_primitives::views::StateChangeValueView;
 use near_crypto::PublicKey;
-use std::collections::{BTreeMap, HashMap};
+use std::collections::HashMap;
 
 #[derive(Default, Debug, Clone, BorshSerialize, BorshDeserialize)]
 pub struct FlatStateData {
-    pub access_keys: HashMap<AccountId, BTreeMap<PublicKey, AccessKey>>,
+    pub access_keys: HashMap<AccountId, HashMap<PublicKey, AccessKey>>,
     pub accounts: HashMap<AccountId, Account>,
-    pub data: HashMap<AccountId, BTreeMap<Vec<u8>, Vec<u8>>>,
+    pub data: HashMap<AccountId, HashMap<Vec<u8>, Vec<u8>>>,
     pub contracts_code: HashMap<AccountId, Vec<u8>>,
 }
 
@@ -32,7 +32,7 @@ impl FlatStateData {
             } => {
                 self.data
                     .entry(account_id)
-                    .or_insert_with(BTreeMap::new)
+                    .or_insert_with(HashMap::new)
                     .insert(key.into(), value.into());
             }
 
@@ -43,7 +43,7 @@ impl FlatStateData {
             } => {
                 self.access_keys
                     .entry(account_id)
-                    .or_insert_with(BTreeMap::new)
+                    .or_insert_with(HashMap::new)
                     .insert(public_key, access_key.into());
             }
             StateChangeValueView::AccessKeyDeletion {
@@ -54,7 +54,7 @@ impl FlatStateData {
                     let entry = self
                         .access_keys
                         .entry(account_id.clone())
-                        .or_insert_with(BTreeMap::new);
+                        .or_insert_with(HashMap::new);
                     entry.remove(&public_key);
                     entry.is_empty()
                 };
@@ -67,7 +67,7 @@ impl FlatStateData {
                     let entry = self
                         .data
                         .entry(account_id.clone())
-                        .or_insert_with(BTreeMap::new);
+                        .or_insert_with(HashMap::new);
                     let key: Vec<u8> = key.into();
                     entry.remove(&key);
                     entry.is_empty()

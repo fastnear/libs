@@ -6,16 +6,14 @@ use fastnear_primitives::near_primitives::views::BlockHeaderInnerLiteView;
 use std::fs::File;
 use std::io::{BufWriter, Write};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, BorshSerialize, BorshDeserialize)]
-pub enum FlatStateVersion {
-    V1,
-}
+const FLAT_STATE_VERSION: u8 = 0;
 
 impl FlatState {
     fn inner_save(&self, path: &str) -> std::io::Result<()> {
         let mut file = File::create(path)?;
         let mut writer = BufWriter::new(&mut file);
-        FlatStateVersion::V1.serialize(&mut writer)?;
+
+        FLAT_STATE_VERSION.serialize(&mut writer)?;
 
         self.config.serialize(&mut writer)?;
         self.block_header.serialize(&mut writer)?;
@@ -31,9 +29,9 @@ impl FlatState {
         let file = File::open(path)?;
         let mut reader = std::io::BufReader::new(file);
 
-        let version: FlatStateVersion = FlatStateVersion::deserialize_reader(&mut reader)?;
+        let version: u8 = u8::deserialize_reader(&mut reader)?;
 
-        if version != FlatStateVersion::V1 {
+        if version != FLAT_STATE_VERSION {
             return Err(std::io::Error::new(
                 std::io::ErrorKind::InvalidData,
                 "Unsupported version",
