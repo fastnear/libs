@@ -1,6 +1,8 @@
 use borsh::{BorshDeserialize, BorshSerialize};
 use fastnear_primitives::near_indexer_primitives::types::AccountId;
-use fastnear_primitives::near_primitives::account::{AccessKey, Account};
+use fastnear_primitives::near_primitives::account::{
+    AccessKey, AccessKeyPermission, Account, FunctionCallPermission,
+};
 use fastnear_primitives::near_primitives::views::StateChangeValueView;
 use near_crypto::{ED25519PublicKey, KeyType, PublicKey, Secp256K1PublicKey};
 use std::collections::HashMap;
@@ -57,9 +59,57 @@ impl From<BoxedPublicKey> for PublicKey {
 }
 
 #[derive(Debug, Clone, BorshSerialize, BorshDeserialize)]
+pub struct BoxedAccessKey {
+    /// Nonce for this access key, used for tx nonce generation. When access key is created, nonce
+    /// is set to `(block_height - 1) * 1e6` to avoid tx hash collision on access key re-creation.
+    /// See <https://github.com/near/nearcore/issues/3779> for more details.
+    pub nonce: u64,
+
+    /// Defines permissions for this access key.
+    pub permission: BoxedAccessKeyPermission,
+}
+
+#[derive(Debug, Clone, BorshSerialize, BorshDeserialize)]
+pub enum BoxedAccessKeyPermission {
+    FunctionCall(Box<FunctionCallPermission>),
+
+    /// Grants full access to the account.
+    /// NOTE: It's used to replace account-level public keys.
+    FullAccess,
+}
+
+impl From<AccessKey> for BoxedAccessKey {
+    fn from(access_key: AccessKey) -> Self {
+        Self {
+            nonce: access_key.nonce,
+            permission: match access_key.permission {
+                AccessKeyPermission::FunctionCall(permission) => {
+                    BoxedAccessKeyPermission::FunctionCall(permission.into())
+                }
+                AccessKeyPermission::FullAccess => BoxedAccessKeyPermission::FullAccess,
+            },
+        }
+    }
+}
+
+impl From<BoxedAccessKey> for AccessKey {
+    fn from(boxed_access_key: BoxedAccessKey) -> Self {
+        Self {
+            nonce: boxed_access_key.nonce,
+            permission: match boxed_access_key.permission {
+                BoxedAccessKeyPermission::FunctionCall(permission) => {
+                    AccessKeyPermission::FunctionCall(*permission)
+                }
+                BoxedAccessKeyPermission::FullAccess => AccessKeyPermission::FullAccess,
+            },
+        }
+    }
+}
+
+#[derive(Debug, Clone, BorshSerialize, BorshDeserialize)]
 pub struct FlatAccount {
     pub account: Account,
-    pub access_keys: Vec<(BoxedPublicKey, AccessKey)>,
+    pub access_keys: Vec<(BoxedPublicKey, BoxedAccessKey)>,
     pub data: Option<Box<HashMap<Vec<u8>, Vec<u8>>>>,
     pub contract_code: Option<Box<Vec<u8>>>,
 }
@@ -134,7 +184,11 @@ impl FlatStateData {
                 access_key,
             } => {
                 self.accounts.entry(account_id).and_modify(|entry| {
-                    vec_insert(&mut entry.access_keys, public_key.into(), access_key.into());
+                    vec_insert(
+                        &mut entry.access_keys,
+                        public_key.into(),
+                        AccessKey::from(access_key).into(),
+                    );
                 });
             }
             StateChangeValueView::AccessKeyDeletion {
