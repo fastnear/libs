@@ -83,8 +83,7 @@ impl FlatStateData {
                 match &public_key {
                     PublicKey::ED25519(pk) => {
                         if let Some(ak) = self.accounts.get_mut(&account_id) {
-                            let ed_full_key = ak.ed_full_key.take();
-                            if let Some((key, _nonce)) = ed_full_key {
+                            if let Some((key, nonce)) = ak.ed_full_key.take() {
                                 if &key.0 == pk {
                                     if is_full_access {
                                         ak.ed_full_key = Some((key, access_key.nonce));
@@ -92,6 +91,8 @@ impl FlatStateData {
                                     } else {
                                         ak.ed_full_key = None;
                                     }
+                                } else {
+                                    ak.ed_full_key = Some((key, nonce));
                                 }
                             } else {
                                 if is_full_access {
@@ -118,11 +119,12 @@ impl FlatStateData {
                 match &public_key {
                     PublicKey::ED25519(pk) => {
                         if let Some(ak) = self.accounts.get_mut(&account_id) {
-                            let ed_full_key = ak.ed_full_key.take();
-                            if let Some((key, _nonce)) = ed_full_key {
-                                if &key.0 == pk {
-                                    ak.ed_full_key = None;
+                            if let Some(pair) = ak.ed_full_key.take() {
+                                if &pair.0 .0 == pk {
+                                    // Already removed
                                     return;
+                                } else {
+                                    ak.ed_full_key = Some(pair);
                                 }
                             }
                         }
