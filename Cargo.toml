@@ -29,4 +29,3 @@ borsh = { version = "1.5.0", features = ["derive"] }
 near-jsonrpc-client = "0.10"
 near-jsonrpc-primitives = "0.23.0"
 near-chain-configs = "0.23.0"
-halfbrown = "0.2.5"
