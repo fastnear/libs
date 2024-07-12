@@ -17,6 +17,7 @@ borsh.workspace = true
 near-crypto.workspace = true
 serde_json.workspace = true
 serde_with.workspace = true
+psutil = "3.3.0"
 
 near-chain-configs = { workspace = true, optional = true }
 
