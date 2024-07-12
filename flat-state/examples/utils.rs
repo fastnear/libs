@@ -51,6 +51,15 @@ pub fn print_state_info(state: &FlatState) {
     println!("Block Height: {}", state.block_header.height);
 
     println!("Num Accounts: {}", state.data.accounts.len());
+    println!(
+        "Num Accounts with Access keys: {}",
+        state.data.access_keys.len()
+    );
+    println!("Num Accounts with Data: {}", state.data.data.len());
+    println!(
+        "Num Accounts with Contract code: {}",
+        state.data.contracts_code.len()
+    );
 
     if state.data.accounts.len() > 0 {
         let account_id = state.data.accounts.keys().next().unwrap();

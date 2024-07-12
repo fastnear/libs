@@ -46,3 +46,6 @@ required-features = ["statedump"]
 
 [[example]]
 name = "state_storage"
+
+[[example]]
+name = "state_loader"
