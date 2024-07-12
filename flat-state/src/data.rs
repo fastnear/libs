@@ -2,15 +2,66 @@ use borsh::{BorshDeserialize, BorshSerialize};
 use fastnear_primitives::near_indexer_primitives::types::AccountId;
 use fastnear_primitives::near_primitives::account::{AccessKey, Account};
 use fastnear_primitives::near_primitives::views::StateChangeValueView;
-use near_crypto::PublicKey;
+use near_crypto::{ED25519PublicKey, KeyType, PublicKey, Secp256K1PublicKey};
 use std::collections::HashMap;
+use std::io::{Error, ErrorKind, Read, Write};
+use std::ops::Deref;
+
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub enum BoxedPublicKey {
+    /// 256 bit elliptic curve based public-key.
+    ED25519(Box<ED25519PublicKey>),
+    /// 512 bit elliptic curve based public-key used in Bitcoin's public-key cryptography.
+    SECP256K1(Box<Secp256K1PublicKey>),
+}
+
+impl BorshSerialize for BoxedPublicKey {
+    fn serialize<W: Write>(&self, writer: &mut W) -> Result<(), Error> {
+        match self {
+            BoxedPublicKey::ED25519(public_key) => {
+                BorshSerialize::serialize(&0u8, writer)?;
+                writer.write_all(&public_key.0)?;
+            }
+            BoxedPublicKey::SECP256K1(public_key) => {
+                BorshSerialize::serialize(&1u8, writer)?;
+                writer.write_all(public_key.deref().as_ref())?;
+            }
+        }
+        Ok(())
+    }
+}
+
+impl BorshDeserialize for BoxedPublicKey {
+    fn deserialize_reader<R: Read>(rd: &mut R) -> std::io::Result<Self> {
+        let public_key = PublicKey::try_from_reader(rd)?;
+        Ok(public_key.into())
+    }
+}
+
+impl From<PublicKey> for BoxedPublicKey {
+    fn from(public_key: PublicKey) -> Self {
+        match public_key {
+            PublicKey::ED25519(ed25519) => BoxedPublicKey::ED25519(ed25519.into()),
+            PublicKey::SECP256K1(secp256k1) => BoxedPublicKey::SECP256K1(secp256k1.into()),
+        }
+    }
+}
+
+impl From<BoxedPublicKey> for PublicKey {
+    fn from(boxed_public_key: BoxedPublicKey) -> Self {
+        match boxed_public_key {
+            BoxedPublicKey::ED25519(ed25519) => PublicKey::ED25519(*ed25519),
+            BoxedPublicKey::SECP256K1(secp256k1) => PublicKey::SECP256K1(*secp256k1),
+        }
+    }
+}
 
 #[derive(Debug, Clone, BorshSerialize, BorshDeserialize)]
 pub struct FlatAccount {
     pub account: Account,
-    pub access_keys: Vec<(PublicKey, AccessKey)>,
-    pub data: Option<HashMap<Vec<u8>, Vec<u8>>>,
-    pub contract_code: Option<Vec<u8>>,
+    pub access_keys: Vec<(BoxedPublicKey, AccessKey)>,
+    pub data: Option<Box<HashMap<Vec<u8>, Vec<u8>>>>,
+    pub contract_code: Option<Box<Vec<u8>>>,
 }
 
 impl FlatAccount {
@@ -72,7 +123,7 @@ impl FlatStateData {
                 self.accounts.entry(account_id).and_modify(|entry| {
                     entry
                         .data
-                        .get_or_insert_with(HashMap::new)
+                        .get_or_insert_with(|| Box::new(HashMap::new()))
                         .insert(key.into(), value.into());
                 });
             }
@@ -83,7 +134,7 @@ impl FlatStateData {
                 access_key,
             } => {
                 self.accounts.entry(account_id).and_modify(|entry| {
-                    vec_insert(&mut entry.access_keys, public_key, access_key.into());
+                    vec_insert(&mut entry.access_keys, public_key.into(), access_key.into());
                 });
             }
             StateChangeValueView::AccessKeyDeletion {
@@ -91,7 +142,7 @@ impl FlatStateData {
                 public_key,
             } => {
                 self.accounts.entry(account_id).and_modify(|entry| {
-                    vec_remove(&mut entry.access_keys, &public_key);
+                    vec_remove(&mut entry.access_keys, &public_key.into());
                 });
             }
             StateChangeValueView::DataDeletion { account_id, key } => {
