@@ -15,7 +15,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let chain_id = ChainId::try_from(utils::input("Enter chain ID", Some("mainnet"))?)
         .expect("Invalid chain ID");
     let rpc_url = utils::input("Enter RPC URL", Some(utils::DEFAULT_RPC_URL))?;
-    let account_id = AccountId::try_from(utils::input("Enter account ID", Some("first.tkn.near"))?)
+    let account_id = AccountId::try_from(utils::input("Enter account ID", Some("zavodil.near"))?)
         .expect("Invalid account ID");
     let save_state_path = utils::input("Enter path to save state (optional)", None)?;
 

@@ -4,7 +4,7 @@ use fastnear_flat_state::state::FlatState;
 use fastnear_primitives::near_primitives::types::AccountId;
 use std::io::{self, Write};
 
-pub const DEFAULT_RPC_URL: &str = "https://beta.rpc.mainnet.near.org";
+pub const DEFAULT_RPC_URL: &str = "https://archival-rpc.mainnet.pagoda.co";
 
 pub fn input(query: &str, default: Option<&str>) -> io::Result<String> {
     print!(
