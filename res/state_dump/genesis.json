@@ -1,0 +1,608 @@
+{
+  "protocol_version": 66,
+  "genesis_time": "2024-06-12T17:07:33.565645988Z",
+  "chain_id": "mainnet",
+  "genesis_height": 121015263,
+  "num_block_producer_seats": 100,
+  "num_block_producer_seats_per_shard": [
+    100,
+    100,
+    100,
+    100,
+    100,
+    100
+  ],
+  "avg_hidden_validator_seats_per_shard": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "dynamic_resharding": false,
+  "protocol_upgrade_stake_threshold": [
+    4,
+    5
+  ],
+  "epoch_length": 43200,
+  "gas_limit": 1000000000000000,
+  "min_gas_price": "1000000000",
+  "max_gas_price": "10000000000000000000000",
+  "block_producer_kickout_threshold": 90,
+  "chunk_producer_kickout_threshold": 90,
+  "online_min_threshold": [
+    90,
+    100
+  ],
+  "online_max_threshold": [
+    99,
+    100
+  ],
+  "gas_price_adjustment_rate": [
+    1,
+    100
+  ],
+  "validators": [
+    {
+      "account_id": "01node.poolv1.near",
+      "public_key": "ed25519:5xz7EbcnPqabwoFezdJBxieK8S7XLsdHHuLwM4vLLhFt",
+      "amount": "2298331598756492326590215020930"
+    },
+    {
+      "account_id": "08investinwomen_runbybisontrails.poolv1.near",
+      "public_key": "ed25519:C6yqxQ3suwjmm8ufG5e3BsHiwxUs9h839FCneF41V7TM",
+      "amount": "1173161677568881545225258211389"
+    },
+    {
+      "account_id": "aca87218e28c41f5a693dee3dff12238.poolv1.near",
+      "public_key": "ed25519:4NUpJFsD9D45T2bcHyfAVFynQWqZxTLdzuHjeGB229Bw",
+      "amount": "8073284602413496800011853950376"
+    },
+    {
+      "account_id": "allnodes.poolv1.near",
+      "public_key": "ed25519:AGEeyukQdMtg8EttsU39YLgryhao8yQeVwQTut5bbWdL",
+      "amount": "4287817999757810791359923139585"
+    },
+    {
+      "account_id": "anonymous.poolv1.near",
+      "public_key": "ed25519:Hoj7LbPwNwAkLFhf8z2aDF1BG6NDSrq1BfkdaKqPfbXx",
+      "amount": "2260629565979887808323051176160"
+    },
+    {
+      "account_id": "appload.poolv1.near",
+      "public_key": "ed25519:6LbMVL6otkvZbpuC9sN3z7EXSMo3PT9noPeBdBZTFneM",
+      "amount": "1645536180228695221802366300097"
+    },
+    {
+      "account_id": "astro-stakers.poolv1.near",
+      "public_key": "ed25519:2nPSBCzjqikgwrqUMcuEVReJhmkC91eqJGPGqH9sZc28",
+      "amount": "30622767907117979405198488200167"
+    },
+    {
+      "account_id": "atomic-nodes.poolv1.near",
+      "public_key": "ed25519:CpVAHE3JpfDoEPqjBDgYEjgG8JhM5BFKbjUD2N1EuvAL",
+      "amount": "1023728480936954933472567906889"
+    },
+    {
+      "account_id": "aurora.pool.near",
+      "public_key": "ed25519:FZKXoWHFCXMrKiXjAKFdHo5g9PDom4bWMRFERBfufi2Y",
+      "amount": "7354884259554630475570209174024"
+    },
+    {
+      "account_id": "autostake.poolv1.near",
+      "public_key": "ed25519:J1n1HfoxgKHjA7HHeqeXKShaW5CPYi72FEMWS3F7DMNm",
+      "amount": "996231829544160215551950633356"
+    },
+    {
+      "account_id": "avado.poolv1.near",
+      "public_key": "ed25519:FdLWsf42e3Sc7bdKMtxJMgWRP21ysZDSXFnS2vTwTaaA",
+      "amount": "2033531842615185015624173731445"
+    },
+    {
+      "account_id": "baziliknear.poolv1.near",
+      "public_key": "ed25519:E4LAWdgLifBEoaWvhRNy5vpdAnUc3GsUHePeiAurZY5v",
+      "amount": "2657214362940824055627738616264"
+    },
+    {
+      "account_id": "binancenode1.poolv1.near",
+      "public_key": "ed25519:Bb7uPEocbsiQwRfPmsiiiM88DodtuYnBDi6dKZ4JZo2N",
+      "amount": "13074345209838506901722658131428"
+    },
+    {
+      "account_id": "bisontrails.poolv1.near",
+      "public_key": "ed25519:Emk6wQJtpQZRJCvvPmmwP9GD2Pk37xxRpmb5uRvJpX62",
+      "amount": "8392412577806158333935392842821"
+    },
+    {
+      "account_id": "bisontrails2.poolv1.near",
+      "public_key": "ed25519:BrLmFJArKkLWK1A4BumfnDGYrfaQ53H7YEPxWmqJ4bgA",
+      "amount": "31756237220015361069793665288485"
+    },
+    {
+      "account_id": "bitcoinsuisse.poolv1.near",
+      "public_key": "ed25519:Cy2sboVqjDk6d3d2A2AJZBdFvokjk7sjZpYATLjcQSCj",
+      "amount": "6105328518637260934639998872770"
+    },
+    {
+      "account_id": "blockdaemon.poolv1.near",
+      "public_key": "ed25519:3GNFSJiFQQ1rnR68T4eZRff2omPhg1CTewUHBJpQAdyc",
+      "amount": "7591313292186908414939500004665"
+    },
+    {
+      "account_id": "brea.poolv1.near",
+      "public_key": "ed25519:8dce49J5G28yMGRcSiDnYNFh7GBSma8TmYaw5mGTSH1Z",
+      "amount": "1966381187903246340282708173094"
+    },
+    {
+      "account_id": "buildlinks.poolv1.near",
+      "public_key": "ed25519:Hd3irGt4zEqRPAzcFszX3oTkVWRFFxdecDvShCJSS1Wg",
+      "amount": "3161072891385660502717157245132"
+    },
+    {
+      "account_id": "chorusone.poolv1.near",
+      "public_key": "ed25519:AZwJAgu2qRxHwdpj8ioZEFGcc2jbaZGN7ZvUe7CuXtM7",
+      "amount": "7804241094705149481505848754049"
+    },
+    {
+      "account_id": "coinpayu.poolv1.near",
+      "public_key": "ed25519:Cra7hquT6SkxNgq5dhK1EboLKEg8aouVmMGYN32xLE2Q",
+      "amount": "1231457010257330235072467932236"
+    },
+    {
+      "account_id": "consensus_finoa_00.poolv1.near",
+      "public_key": "ed25519:62c41nzrrZAspLnPBC2A112PXBhJuj1cGkVE3ANwbzat",
+      "amount": "2445953078552051016951351683948"
+    },
+    {
+      "account_id": "consensus_finoa_01.poolv1.near",
+      "public_key": "ed25519:3LqCGkM3uLjQjPmd3yVyaEnceinEL4cBfUm9vp5hJRTJ",
+      "amount": "2327181606967014775612441309448"
+    },
+    {
+      "account_id": "cosmose.poolv1.near",
+      "public_key": "ed25519:2L4jPmtkfBTMDD8XHwqXmQZNPmzZP5zTDFckm8YpydT8",
+      "amount": "10039486706584100328121991598262"
+    },
+    {
+      "account_id": "cryptium.poolv1.near",
+      "public_key": "ed25519:5Y9hW8cKBb5RnsJBqttHHC5ujz5zcZZ5xnrJPwkCWmGQ",
+      "amount": "2507657727635935280756899431690"
+    },
+    {
+      "account_id": "cryptogarik.poolv1.near",
+      "public_key": "ed25519:45zFAC8pLgwn1d5pSBpBHesWbzngfRgd92zaom7K8m8j",
+      "amount": "1041905024486522100720677471353"
+    },
+    {
+      "account_id": "d1.poolv1.near",
+      "public_key": "ed25519:7ZhMRwnSHGJtWjGBZiRhhSi6XyqKeNHtnEXsVTNdrsk6",
+      "amount": "6039403549472117840768039289089"
+    },
+    {
+      "account_id": "dacmpool.poolv1.near",
+      "public_key": "ed25519:8xxSxxAXxjjs3pS2MWYrFHnYScq72Pfv6BZPmNEsP9VU",
+      "amount": "907795148459085572115873016886"
+    },
+    {
+      "account_id": "dexagon.poolv1.near",
+      "public_key": "ed25519:AQHwptR3Ho348BpFXJDjkxpWMW5ZwN7xWM3XWAWSEEgs",
+      "amount": "1737008823975693111093909924985"
+    },
+    {
+      "account_id": "dqw9k3e4422cxt92masmy.poolv1.near",
+      "public_key": "ed25519:EPNc2bHqRCz6TKLstNiusv9qZCRBL63zViwUAcgoZJZj",
+      "amount": "11786163181589085325504517618730"
+    },
+    {
+      "account_id": "dragonfly.poolv1.near",
+      "public_key": "ed25519:6Gj8MRp9KqfdiXa35LJcZnqeBNNEZoYk6ysvpzHaruvq",
+      "amount": "1616408662162047545404174129798"
+    },
+    {
+      "account_id": "dsrvlabs.poolv1.near",
+      "public_key": "ed25519:9SACdsDDgXA2WZLfJvpkKbu22Exxtc4CMbeHmVnN2P4a",
+      "amount": "2088217522675565072884082362220"
+    },
+    {
+      "account_id": "electric.poolv1.near",
+      "public_key": "ed25519:GpSr5KAZMZ1Cb4dHMRUVhmp95y2fmWtm4dEjAr8iAva5",
+      "amount": "16310334976833543095449694217924"
+    },
+    {
+      "account_id": "epic.poolv1.near",
+      "public_key": "ed25519:68HExKDtw1CjGzopZ8fMAMhMSZRVKRhwLzLQmGKtFNzT",
+      "amount": "9921215336241788198646489265259"
+    },
+    {
+      "account_id": "erm.poolv1.near",
+      "public_key": "ed25519:88nnN6LAuCbJaj9wucd1WUMfTtdv2s3njpvozHft8oQ5",
+      "amount": "2389435176993489184768943607118"
+    },
+    {
+      "account_id": "everstake.poolv1.near",
+      "public_key": "ed25519:4JLvwa1r2eAxHLyKeDJnpqMG5f2Z9rr49rwuTwb9g8u2",
+      "amount": "7048013704617658427438398716543"
+    },
+    {
+      "account_id": "figment.poolv1.near",
+      "public_key": "ed25519:7RjyY1bRKDqkshbKZtgpQdwsdxou8j9my8g1hPKZ9ngM",
+      "amount": "17092684169532811853088545627450"
+    },
+    {
+      "account_id": "finoa.poolv1.near",
+      "public_key": "ed25519:62gxgzoie7FiK9dnWuiwM1bbuvhpceYDavK7SgdfEMJc",
+      "amount": "972089379024153437347029655910"
+    },
+    {
+      "account_id": "flipside.pool.near",
+      "public_key": "ed25519:AN4p2oa476V64Kr7q9bJAzZisBKYJyb7nuC5aa2G2P2Q",
+      "amount": "11275883762611578663505336431471"
+    },
+    {
+      "account_id": "foundry.poolv1.near",
+      "public_key": "ed25519:5Qx8Fq3SK4Vu1sRRpf2HsNGLAqdNqgkKEebHMniLWhkW",
+      "amount": "2939801291442610928987059512196"
+    },
+    {
+      "account_id": "fresh.poolv1.near",
+      "public_key": "ed25519:6YHLXhohY8kMnkp5Jw4HrJ52xtdyt1rcP6AaWkKzh3ED",
+      "amount": "1292264851368115460575471555124"
+    },
+    {
+      "account_id": "future_is_near.poolv1.near",
+      "public_key": "ed25519:F3vEGwYYGisaXwKJWrYgorB95DfArDby8bK5wydxD5fp",
+      "amount": "10526520039365987284389131597732"
+    },
+    {
+      "account_id": "galactic.poolv1.near",
+      "public_key": "ed25519:GFK83N32DbERtFg8rkpfNBsKtkFpmNQzyKFM9kJvPCMG",
+      "amount": "885908478916586460050604341838"
+    },
+    {
+      "account_id": "gfi-validator.poolv1.near",
+      "public_key": "ed25519:66qdCDZzqhKvgvkMNdPoZWX3at72SH5t6CW3iftP28vT",
+      "amount": "1597826922367096723533341084291"
+    },
+    {
+      "account_id": "hapi.poolv1.near",
+      "public_key": "ed25519:H3hLJX38sfxHdtJTFZWhWCeo4YCWihTyPsgxjqm1XDan",
+      "amount": "1574311277415525401545248331159"
+    },
+    {
+      "account_id": "hashquark.poolv1.near",
+      "public_key": "ed25519:3YDdmN1vhF7yAWnYxGMHY46jcLE9h11HvEeF6Kntugeq",
+      "amount": "1106304023398305034878430371989"
+    },
+    {
+      "account_id": "hb436_pool.poolv1.near",
+      "public_key": "ed25519:7oU4C3vWqkeup7aMfjyV1ojt7yKX7ShLfvNCahBRy1eW",
+      "amount": "1585857800221964462049849787243"
+    },
+    {
+      "account_id": "here.poolv1.near",
+      "public_key": "ed25519:4QZx48u84AC6eWJ3iaup5YDh2HuxF6k855fmAut88Ms6",
+      "amount": "2538445899361965988121787835045"
+    },
+    {
+      "account_id": "infiniteloop.poolv1.near",
+      "public_key": "ed25519:9BUwtDegzwKcmJBjLgUDLHc3pePgPKcWJXYGcZb33Nyr",
+      "amount": "1040600744325142512798508996023"
+    },
+    {
+      "account_id": "inotel.poolv1.near",
+      "public_key": "ed25519:DmEDRntb9NwfbfdvDf6wzjsw1vxzQcJAAhFL2J75iLwr",
+      "amount": "1663024990475869777217794091081"
+    },
+    {
+      "account_id": "jazza.poolv1.near",
+      "public_key": "ed25519:EW66Fkv7XcE9FiybuYtVURjHhYeEgwWWpzF685Vi7foY",
+      "amount": "1052812359871067824516792728692"
+    },
+    {
+      "account_id": "kaiching.poolv1.near",
+      "public_key": "ed25519:6r2BdJrN4ffexxpUDwNnbgYzfvLw4XtydVHMBrKE28rZ",
+      "amount": "5011185815282224060475987706799"
+    },
+    {
+      "account_id": "kiln-1.poolv1.near",
+      "public_key": "ed25519:8ZNqVxH3Ndq44qYjyt3FZjKYEwfXxkHK7fN4bPmobLTP",
+      "amount": "8775129315921916707476061038516"
+    },
+    {
+      "account_id": "kiln.poolv1.near",
+      "public_key": "ed25519:GAekByYrSuo3seuaGQx7V1ZTC3gWZY8JxZJ4aWW76LiT",
+      "amount": "4392898339743236455870504640748"
+    },
+    {
+      "account_id": "lavenderfive.poolv1.near",
+      "public_key": "ed25519:HXiLVGFiMssLHH6H36G7AsaYhBankPNgd4b7uNsXzQVF",
+      "amount": "892355718545731756605678344927"
+    },
+    {
+      "account_id": "ledgerbyfigment.poolv1.near",
+      "public_key": "ed25519:Gc2QWoxLN8ryX1Dyje8va4ojt5GpnUQwHyvXZnrAY84A",
+      "amount": "20628218392738535018660666794644"
+    },
+    {
+      "account_id": "legends.poolv1.near",
+      "public_key": "ed25519:DNK46DeHKeJPF9YetmNxZnqtpkeLjdUb9ezSRCue3TpB",
+      "amount": "11713673621408715981739402907703"
+    },
+    {
+      "account_id": "liver.pool.near",
+      "public_key": "ed25519:aiKNxj28QB3P6jSu3FghugQC2edj9zBuwU1Uts1jey2",
+      "amount": "9003326691499194937635483942037"
+    },
+    {
+      "account_id": "luganodes.pool.near",
+      "public_key": "ed25519:6JjoQie2ALes22KYGp57zjAzNQFj9xoAivtq6FXbLVhv",
+      "amount": "2009397276309899854177826675411"
+    },
+    {
+      "account_id": "lunanova.poolv1.near",
+      "public_key": "ed25519:qkfP4NsSuHybdLhdvvYQ2Y9xWPsd249thEvrzbJBKNc",
+      "amount": "2000858277447610409370538860302"
+    },
+    {
+      "account_id": "lux.poolv1.near",
+      "public_key": "ed25519:HzTGTDfTz63QGvvUdMGozFeaENFGyYAoSrqYJb23qZFN",
+      "amount": "2599019720189883699641572912211"
+    },
+    {
+      "account_id": "masternode24.poolv1.near",
+      "public_key": "ed25519:5ZyaXsGCya4Sch5bqUfohvo7iRFYB9ancRouggWRsiDU",
+      "amount": "2923943585428753422123076796037"
+    },
+    {
+      "account_id": "moonlet.poolv1.near",
+      "public_key": "ed25519:GkDwzPckMfhkdYgyFG69Uph8RJ12BcV9xNeZW2q93ZJD",
+      "amount": "1930615825920323806139968843069"
+    },
+    {
+      "account_id": "namdokmai.poolv1.near",
+      "public_key": "ed25519:5E3pSC3WWSMd7MWvLfx2nb3J9qCokuW1ynsQ1djMUwMs",
+      "amount": "1708302750358926820754263974899"
+    },
+    {
+      "account_id": "near-fans.poolv1.near",
+      "public_key": "ed25519:AgV97ssnHm7qN8JhYZjwyDtuaT6Ms3Fgbw3WeAC8M3iF",
+      "amount": "5769614323395478088615093014489"
+    },
+    {
+      "account_id": "nearfans.poolv1.near",
+      "public_key": "ed25519:GM8vWM4TqTt7jh3sXYCAs2KPyn4vEmAceteBGEFYhyku",
+      "amount": "3905957585428581261202372247835"
+    },
+    {
+      "account_id": "nearkoreahub.poolv1.near",
+      "public_key": "ed25519:HUKmMJ59Hht8rcGG6uZ9M4qWsfbTCDtBgyV93YZnPXGE",
+      "amount": "1712341147528633748354638598082"
+    },
+    {
+      "account_id": "nearone.pool.near",
+      "public_key": "ed25519:HYRRAMtyXPCVHdyk89WsRyrirbUKXe7CBmLfFzZGSwtm",
+      "amount": "9518758253221868066059276200155"
+    },
+    {
+      "account_id": "neat.poolv1.near",
+      "public_key": "ed25519:DLxERfSJj39tiXVbXPBZZeuHMBi7zzcrRMYxkQFUKr3k",
+      "amount": "1002781826630888874575469106484"
+    },
+    {
+      "account_id": "nodeasy.poolv1.near",
+      "public_key": "ed25519:8mjespqqUePSYSsxYxPqCUsZUuMxVJr1vjBRwFeCke5K",
+      "amount": "5613234153723334252105296724857"
+    },
+    {
+      "account_id": "northernlights.poolv1.near",
+      "public_key": "ed25519:7HXh6iS9Rh92Uj1c5T9fPjQXPLnti4Rr2cJQcJEYpdGV",
+      "amount": "4683110431242116536923897283868"
+    },
+    {
+      "account_id": "openshards.poolv1.near",
+      "public_key": "ed25519:4Xm73PiAGMZu3mZg4gF7j96iTAFHGbPvqzxBaTgKP4ub",
+      "amount": "2164132305319821628630753930401"
+    },
+    {
+      "account_id": "optimusvalidatornetwork.poolv1.near",
+      "public_key": "ed25519:C3CJMKaWdEzkqyNCKwnKud6wDNnzs7Ura63k16zm4LUU",
+      "amount": "1204197704368493867465058260270"
+    },
+    {
+      "account_id": "p2p-org.poolv1.near",
+      "public_key": "ed25519:J441YAvvYvjWs3aVzjc5KLLWRzmhQTEMaymPyWFkMGeG",
+      "amount": "3607710199898586083530708818961"
+    },
+    {
+      "account_id": "pandateam.poolv1.near",
+      "public_key": "ed25519:Cu83NRziNLiT6HLu9kJ8svFoftZQ9wVmjScxjqCybppt",
+      "amount": "2197195172499523038688244650350"
+    },
+    {
+      "account_id": "pandora.poolv1.near",
+      "public_key": "ed25519:53N7KBhSkEP6tLuQmxZV9fAK16D1C2kWnuzes8KNyS7P",
+      "amount": "4705347655434762411925066094982"
+    },
+    {
+      "account_id": "pangdao.poolv1.near",
+      "public_key": "ed25519:C35kAQVW6MHoWtUZ599WHXamRXVZnrHMVD1q85FERiem",
+      "amount": "1010660430596258877574641708608"
+    },
+    {
+      "account_id": "pinnacle1.poolv1.near",
+      "public_key": "ed25519:HW5DFACJgP9chUnidNmBJG7xn2vkik8MwJ9ZVQa48Vkc",
+      "amount": "13538846679403260800271709239116"
+    },
+    {
+      "account_id": "polkachu.poolv1.near",
+      "public_key": "ed25519:CRo22dZDNJ8hbnjisHMo7D8kZACzko2XYdxz5Lea6mwp",
+      "amount": "945988800696789915374347804403"
+    },
+    {
+      "account_id": "profit.poolv1.near",
+      "public_key": "ed25519:AgaTGckCXUBGYfJkQTFh6qwWHv1MohvtdKjcogbvsbw6",
+      "amount": "1014956799133117860498948291908"
+    },
+    {
+      "account_id": "qbit.poolv1.near",
+      "public_key": "ed25519:5DqZLnDu6PMEyhJzc5NhiMsoWeYMWG1bC4AULyafoXMv",
+      "amount": "1449854571596443570179822746561"
+    },
+    {
+      "account_id": "readylayerone_staking.poolv1.near",
+      "public_key": "ed25519:6AuBsxxSCYHkuJW9Rhf7HK2qYKErtThZUrN5HFDnQ9eg",
+      "amount": "1110591624571605064622802796103"
+    },
+    {
+      "account_id": "rekt.poolv1.near",
+      "public_key": "ed25519:FoAaUdVKEHtVokG1aVmJNou61YcfQhXmaZ5Hnfsz4fHC",
+      "amount": "7336865695693597156439586862317"
+    },
+    {
+      "account_id": "sharpdarts.poolv1.near",
+      "public_key": "ed25519:9XMHXqv7rM3QQxzjUu7dfKD7GhMkq8CEceaPdkhiBQUX",
+      "amount": "1274387444676575832363970268483"
+    },
+    {
+      "account_id": "smart-stake.poolv1.near",
+      "public_key": "ed25519:A6wpkLQiYqPZ1rbd9s5S1Bg3LxccVsQqiCRDUXwzJ6Hx",
+      "amount": "2716364676519539543100049658223"
+    },
+    {
+      "account_id": "sourcemoon2.poolv1.near",
+      "public_key": "ed25519:HNmPo2K15GKC3C2kGvsRwbcpTLZNgEGnWoygrRKdq2Gy",
+      "amount": "1198484601656661856559506702902"
+    },
+    {
+      "account_id": "stake1.poolv1.near",
+      "public_key": "ed25519:7EiVt9i7SmULDKEnAXBFSMzwUmZdxUYDFkP73MZuCH1h",
+      "amount": "11288056119628807946456331096711"
+    },
+    {
+      "account_id": "staked.poolv1.near",
+      "public_key": "ed25519:3JBVXqenru2ErAM1kHQ8qfd29dCkURLd6JKrFgtmcDTZ",
+      "amount": "22052325416346937220583603848065"
+    },
+    {
+      "account_id": "stakely_io.poolv1.near",
+      "public_key": "ed25519:HWp9E3gP91s25ddMS9xUWuzbJUpVGiPoitu5bT6hqMHs",
+      "amount": "1867759549470352937423578363710"
+    },
+    {
+      "account_id": "stakesabai.poolv1.near",
+      "public_key": "ed25519:6abauNvvWnEkagjVpWRy2tZJdzPkmqurUjteMTKk5KQF",
+      "amount": "2761671505916678127010776759256"
+    },
+    {
+      "account_id": "stakin.poolv1.near",
+      "public_key": "ed25519:85UGfKdVoxX9u86JsBMxmVHBguYonnM3vTR2WoD5GkEg",
+      "amount": "5161025209089602256061489976279"
+    },
+    {
+      "account_id": "staking-power.poolv1.near",
+      "public_key": "ed25519:42ikqyV1BYmSnhHJ9EsLLy9kgeAg1mC3qqU1AJGaTEaW",
+      "amount": "864518303315358903848603748172"
+    },
+    {
+      "account_id": "staking_yes_protocol1.poolv1.near",
+      "public_key": "ed25519:CVVcLtfAWj6k1DqKJwhYBQwjMQFmXzFY2NBdMxp1RqL1",
+      "amount": "13568272778111267950166633122702"
+    },
+    {
+      "account_id": "stardust.poolv1.near",
+      "public_key": "ed25519:6rxCJpTnrT6NFuGg6d5Dj3FEUz1ScNU9u35ywB3dYhrX",
+      "amount": "2161997053771883085233499646456"
+    },
+    {
+      "account_id": "sumerian.poolv1.near",
+      "public_key": "ed25519:BLvNwUb1nQWympnmsHTtH7HCMeH6gSaYkjNsdee9AvzR",
+      "amount": "17153300545792912335961406833083"
+    },
+    {
+      "account_id": "sweat_validator.poolv1.near",
+      "public_key": "ed25519:677kArWPFPRDgWEBHqHj6BCmEdTVBsAcjQAc75Gtyq2j",
+      "amount": "7520133135573804428028535708282"
+    },
+    {
+      "account_id": "twinstake.poolv1.near",
+      "public_key": "ed25519:HckUvc5poFR2BU5PzpdLbJ6htGAiRKu3YTy25gkczVzp",
+      "amount": "8658743121436748906033801706453"
+    },
+    {
+      "account_id": "wackazong.poolv1.near",
+      "public_key": "ed25519:6REdNqRNpkm5buNzuHujhZfaSGyHqLbTFSTWvY3JYvNs",
+      "amount": "1211233041415702353510127984465"
+    },
+    {
+      "account_id": "x.poolv1.near",
+      "public_key": "ed25519:EBgfeKJ5oZhhJUdutdRMdTwaeJrgNHHEDntQGr2gFo9R",
+      "amount": "2939577606446562356067300545244"
+    },
+    {
+      "account_id": "zavodil.poolv1.near",
+      "public_key": "ed25519:HHARoU1hANWF9hu7YRstDDvgyigBhUeUuqecRVr8dpUz",
+      "amount": "21515888844634591497919317006687"
+    }
+  ],
+  "transaction_validity_period": 86400,
+  "protocol_reward_rate": [
+    0,
+    1
+  ],
+  "max_inflation_rate": [
+    0,
+    1
+  ],
+  "total_supply": "1195215922955224820586527276566467",
+  "num_blocks_per_year": 31536000,
+  "protocol_treasury_account": "treasury.near",
+  "fishermen_threshold": "340282366920938463463374607431768211455",
+  "minimum_stake_divisor": 10,
+  "shard_layout": {
+    "V1": {
+      "boundary_accounts": [
+        "aurora",
+        "aurora-0",
+        "game.hot.tg",
+        "kkuuue2akv_1630967379.near",
+        "tge-lockup.sweat"
+      ],
+      "shards_split_map": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          4
+        ],
+        [
+          5
+        ]
+      ],
+      "to_parent_shard_map": [
+        0,
+        1,
+        2,
+        2,
+        3,
+        4
+      ],
+      "version": 3
+    }
+  },
+  "num_chunk_only_producer_seats": 300,
+  "minimum_validators_per_shard": 1,
+  "max_kickout_stake_perc": 100,
+  "minimum_stake_ratio": [
+    1,
+    6250
+  ],
+  "use_production_config": false
+}
