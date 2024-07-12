@@ -7,10 +7,28 @@ use std::collections::HashMap;
 
 #[derive(Default, Debug, Clone, BorshSerialize, BorshDeserialize)]
 pub struct FlatStateData {
-    pub access_keys: HashMap<AccountId, HashMap<PublicKey, AccessKey>>,
+    pub access_keys: HashMap<AccountId, Vec<(PublicKey, AccessKey)>>,
     pub accounts: HashMap<AccountId, Account>,
     pub data: HashMap<AccountId, HashMap<Vec<u8>, Vec<u8>>>,
     pub contracts_code: HashMap<AccountId, Vec<u8>>,
+}
+
+fn vec_insert<K, V>(vec: &mut Vec<(K, V)>, key: K, value: V)
+where
+    K: Eq,
+{
+    if let Some((_, v)) = vec.iter_mut().find(|(k, _)| *k == key) {
+        *v = value;
+    } else {
+        vec.push((key, value));
+    }
+}
+
+fn vec_remove<K, V>(vec: &mut Vec<(K, V)>, key: &K)
+where
+    K: Eq,
+{
+    vec.retain(|(k, _)| k != key);
 }
 
 impl FlatStateData {
@@ -41,10 +59,11 @@ impl FlatStateData {
                 public_key,
                 access_key,
             } => {
-                self.access_keys
-                    .entry(account_id)
-                    .or_insert_with(HashMap::new)
-                    .insert(public_key, access_key.into());
+                vec_insert(
+                    self.access_keys.entry(account_id).or_insert_with(Vec::new),
+                    public_key,
+                    access_key.into(),
+                );
             }
             StateChangeValueView::AccessKeyDeletion {
                 account_id,
@@ -54,8 +73,8 @@ impl FlatStateData {
                     let entry = self
                         .access_keys
                         .entry(account_id.clone())
-                        .or_insert_with(HashMap::new);
-                    entry.remove(&public_key);
+                        .or_insert_with(Vec::new);
+                    vec_remove(entry, &public_key);
                     entry.is_empty()
                 };
                 if is_empty {
