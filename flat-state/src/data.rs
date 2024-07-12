@@ -60,7 +60,9 @@ impl FlatStateData {
                 access_key,
             } => {
                 vec_insert(
-                    self.access_keys.entry(account_id).or_insert_with(Vec::new),
+                    self.access_keys
+                        .entry(account_id)
+                        .or_insert_with(|| Vec::with_capacity(1)),
                     public_key,
                     access_key.into(),
                 );
