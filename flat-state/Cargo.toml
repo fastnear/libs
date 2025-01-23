@@ -6,7 +6,7 @@ authors.workspace = true
 edition.workspace = true
 repository.workspace = true
 license.workspace = true
-publish = true
+publish = false
 
 [dependencies]
 reqwest.workspace = true
@@ -23,8 +23,8 @@ near-chain-configs = { workspace = true, optional = true }
 near-jsonrpc-client = { workspace = true, optional = true }
 near-jsonrpc-primitives = { workspace = true, optional = true }
 
-fastnear-primitives = { version = "0.0.3", path = "../primitives" }
-fastnear-neardata-fetcher = { version = "0.0.3", path = "../neardata-fetcher", optional = true }
+fastnear-primitives = { version = "0.1.0", path = "../primitives" }
+fastnear-neardata-fetcher = { version = "0.1.0", path = "../neardata-fetcher", optional = true }
 
 [dev-dependencies]
 tokio = { version = "1.0", features = ["macros", "rt-multi-thread"] }

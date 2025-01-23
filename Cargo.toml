@@ -1,5 +1,5 @@
 [workspace.package]
-version = "0.0.3"
+version = "0.1.0"
 authors = ["Fastnear Inc <hello@fastnear.com>"]
 edition = "2021"
 repository = "https://github.com/fastnear/libs"
@@ -15,17 +15,20 @@ members = [
 ]
 
 [workspace.dependencies]
-near-indexer-primitives = "0.23"
-near-primitives = "0.23"
-near-crypto = "0.23.0"
+near-indexer-primitives = "0.28.0"
+near-primitives = "0.28.0"
+near-crypto = "0.28.0"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 serde_repr = "0.1"
 serde_with = { version = "3.0", features = ["base64"] }
 reqwest = { version = "0.12.2", features = ["json"] }
-tokio = { version = "1.38", features = ["time", "sync", "rt-multi-thread"] }
+tokio = { version = "1", features = ["time", "sync", "rt-multi-thread"] }
 tracing = { version = "0.1.13", features = ["log"] }
 borsh = { version = "1.5.0", features = ["derive"] }
-near-jsonrpc-client = "0.10"
-near-jsonrpc-primitives = "0.23.0"
-near-chain-configs = "0.23.0"
+near-jsonrpc-client = "0.15"
+near-jsonrpc-primitives = "0.28.0"
+near-chain-configs = "0.28.0"
+tar = "0.4.43"
+flate2 = "1.0"
+
