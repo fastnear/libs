@@ -34,6 +34,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         ChainId::try_from(input("Enter chain ID", Some("mainnet"))?).expect("Invalid chain ID");
     let enter_start_block_height = input("Enter start block height", Some("10000000"))?;
     let num_threads = input("Enter the number of threads", Some("8"))?;
+    let auth_bearer_token = input("Enter the auth bearer token (optional)", None)?;
+    let auth_bearer_token = if auth_bearer_token.is_empty() {
+        None
+    } else {
+        Some(auth_bearer_token)
+    };
 
     println!("Starting fetcher");
 
@@ -54,7 +60,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         timeout_duration: None,
         retry_duration: None,
         disable_archive_sync: false,
-        auth_bearer_token: None,
+        auth_bearer_token,
     };
 
     let (sender, receiver) = mpsc::channel(100);
