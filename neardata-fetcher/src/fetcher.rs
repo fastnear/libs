@@ -102,23 +102,23 @@ impl Fetcher {
         archive_block_height: BlockHeight,
     ) -> InterruptibleResult<Vec<BlockWithTxHashes>> {
         let padded_block_height = format!("{:0>12}", archive_block_height);
-        let url_path = &format!(
-            "/raw/{}/{}/{}.tgz",
+        let suffix = &format!(
+            "{}/{}/{}.tgz",
             &padded_block_height[..6],
             &padded_block_height[6..9],
             padded_block_height
         );
-        let hostname = match self.config.chain_id {
+        let prefix = match self.config.chain_id {
             ChainId::Mainnet if archive_block_height <= MAINNET_ARCHIVE_LAST_BLOCK_HEIGHT => {
-                "https://archive.data.fastnear.com/mainnet"
+                "https://archive.data.fastnear.com/mainnet/"
             }
             ChainId::Testnet if archive_block_height <= TESTNET_ARCHIVE_LAST_BLOCK_HEIGHT => {
-                "https://archive.data.fastnear.com/mainnet"
+                "https://archive.data.fastnear.com/mainnet/"
             }
-            ChainId::Mainnet => "https://mainnet.neardata.xyz",
-            ChainId::Testnet => "https://testnet.neardata.xyz",
+            ChainId::Mainnet => "https://mainnet.neardata.xyz/raw/",
+            ChainId::Testnet => "https://testnet.neardata.xyz/raw/",
         };
-        let url = format!("{}{}", hostname, url_path);
+        let url = format!("{}{}", prefix, suffix);
         while self.is_running.load(Ordering::SeqCst) {
             match self.fetch_archive(&url).await {
                 Ok(Some(archive)) => match self.parse_archive(archive) {
