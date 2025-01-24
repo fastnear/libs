@@ -54,6 +54,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         timeout_duration: None,
         retry_duration: None,
         disable_archive_sync: false,
+        auth_bearer_token: None,
     };
 
     let (sender, receiver) = mpsc::channel(100);

@@ -23,4 +23,6 @@ pub struct FetcherConfig {
     pub timeout_duration: Option<Duration>,
     pub retry_duration: Option<Duration>,
     pub disable_archive_sync: bool,
+    /// The Bearer token to use for authentication
+    pub auth_bearer_token: Option<String>,
 }

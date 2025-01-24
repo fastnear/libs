@@ -18,9 +18,11 @@ struct Fetcher {
 
 impl Fetcher {
     pub async fn fetch_block(&self, url: &str) -> BlockResult {
-        let response = self
-            .client
-            .get(url)
+        let mut request = self.client.get(url);
+        if let Some(token) = &self.config.auth_bearer_token {
+            request = request.bearer_auth(token);
+        }
+        let response = request
             .timeout(self.config.timeout_duration.unwrap_or(DEFAULT_TIMEOUT))
             .send()
             .await?;
@@ -63,9 +65,11 @@ impl Fetcher {
     }
 
     async fn fetch_archive(&self, url: &str) -> Result<Option<Vec<u8>>, FetchError> {
-        let response = self
-            .client
-            .get(url)
+        let mut request = self.client.get(url);
+        if let Some(token) = &self.config.auth_bearer_token {
+            request = request.bearer_auth(token);
+        }
+        let response = request
             .timeout(self.config.timeout_duration.unwrap_or(DEFAULT_TIMEOUT))
             .send()
             .await?;
@@ -105,8 +109,11 @@ impl Fetcher {
             padded_block_height
         );
         let hostname = match self.config.chain_id {
-            ChainId::Mainnet if archive_block_height < ARCHIVE_0_FINAL_BLOCK_HEIGHT => {
-                "https://a0.mainnet.neardata.xyz"
+            ChainId::Mainnet if archive_block_height <= MAINNET_ARCHIVE_LAST_BLOCK_HEIGHT => {
+                "https://archive.data.fastnear.com/mainnet"
+            }
+            ChainId::Testnet if archive_block_height <= TESTNET_ARCHIVE_LAST_BLOCK_HEIGHT => {
+                "https://archive.data.fastnear.com/mainnet"
             }
             ChainId::Mainnet => "https://mainnet.neardata.xyz",
             ChainId::Testnet => "https://testnet.neardata.xyz",
