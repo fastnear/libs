@@ -115,7 +115,7 @@ impl Fetcher {
             ChainId::Testnet if archive_block_height <= TESTNET_ARCHIVE_LAST_BLOCK_HEIGHT => {
                 "https://archive.data.fastnear.com/mainnet/"
             }
-            ChainId::Mainnet => "https://mainnet.neardata.xyz/raw/",
+            ChainId::Mainnet => "https://a1.mainnet.neardata.xyz/raw/",
             ChainId::Testnet => "https://testnet.neardata.xyz/raw/",
         };
         let url = format!("{}{}", prefix, suffix);
