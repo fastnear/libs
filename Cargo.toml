@@ -3,7 +3,7 @@ version = "0.1.0"
 authors = ["Fastnear Inc <hello@fastnear.com>"]
 edition = "2021"
 repository = "https://github.com/fastnear/libs"
-rust-version = "1.82.0"
+rust-version = "1.84.0"
 license = "MIT OR Apache-2.0"
 
 [workspace]
@@ -15,9 +15,9 @@ members = [
 ]
 
 [workspace.dependencies]
-near-indexer-primitives = "0.28.0"
-near-primitives = "0.28.0"
-near-crypto = "0.28.0"
+near-indexer-primitives = { git = "https://github.com/fastnear/nearcore", rev = "26ba8d92ae4ada12dd446becd429a07d3f5c4285" }
+near-primitives = { git = "https://github.com/fastnear/nearcore", rev = "26ba8d92ae4ada12dd446becd429a07d3f5c4285", features = ["clock"] }
+near-crypto = { git = "https://github.com/fastnear/nearcore", rev = "26ba8d92ae4ada12dd446becd429a07d3f5c4285" }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 serde_repr = "0.1"
@@ -27,8 +27,8 @@ tokio = { version = "1", features = ["time", "sync", "rt-multi-thread"] }
 tracing = { version = "0.1.13", features = ["log"] }
 borsh = { version = "1.5.0", features = ["derive"] }
 near-jsonrpc-client = "0.15"
-near-jsonrpc-primitives = "0.28.0"
-near-chain-configs = "0.28.0"
+near-jsonrpc-primitives = { git = "https://github.com/fastnear/nearcore", rev = "26ba8d92ae4ada12dd446becd429a07d3f5c4285" }
+near-chain-configs = { git = "https://github.com/fastnear/nearcore", rev = "26ba8d92ae4ada12dd446becd429a07d3f5c4285" }
 tar = "0.4.43"
 flate2 = "1.0"
 
