@@ -1,6 +1,18 @@
+use near_primitives::borsh::{BorshDeserialize, BorshSerialize};
 use std::fmt::Display;
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[derive(
+    Debug,
+    Copy,
+    Clone,
+    PartialEq,
+    Eq,
+    BorshSerialize,
+    BorshDeserialize,
+    serde::Serialize,
+    serde::Deserialize,
+)]
+#[serde(rename_all = "lowercase")]
 pub enum ChainId {
     Mainnet,
     Testnet,

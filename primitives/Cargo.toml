@@ -12,3 +12,4 @@ publish = true
 near-indexer-primitives.workspace = true
 near-primitives.workspace = true
 serde.workspace = true
+borsh.workspace = true
