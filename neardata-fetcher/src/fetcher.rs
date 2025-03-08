@@ -1,8 +1,8 @@
-use crate::*;
-use std::io::Read;
-
 pub use crate::types::*;
 pub use crate::utils::*;
+use crate::*;
+use fastnear_primitives::near_primitives::types::Finality;
+use std::io::Read;
 
 #[derive(Debug)]
 struct InterruptedError;
@@ -48,17 +48,39 @@ impl Fetcher {
         Err(InterruptedError)
     }
 
-    pub async fn fetch_last_block(&self) -> InterruptibleResult<Option<BlockWithTxHashes>> {
-        self.fetch_block_until_success(&target_url("/v0/last_block/final", self.config.chain_id))
-            .await
+    pub async fn fetch_last_block(
+        &self,
+        finality: &Finality,
+    ) -> InterruptibleResult<Option<BlockWithTxHashes>> {
+        self.fetch_block_until_success(&target_url(
+            &format!(
+                "/v0/last_block/{}",
+                if finality == &Finality::Final {
+                    "final"
+                } else {
+                    "optimistic"
+                }
+            ),
+            self.config.chain_id,
+        ))
+        .await
     }
 
     pub async fn fetch_block_by_height(
         &self,
         height: BlockHeight,
+        finality: &Finality,
     ) -> InterruptibleResult<Option<BlockWithTxHashes>> {
         self.fetch_block_until_success(&target_url(
-            &format!("/v0/block/{}", height),
+            &format!(
+                "/v0/block{}/{}",
+                if finality == &Finality::Final {
+                    ""
+                } else {
+                    "_opt"
+                },
+                height
+            ),
             self.config.chain_id,
         ))
         .await
@@ -219,10 +241,24 @@ pub async fn start_fetcher(
         is_running,
     };
     let max_num_threads = fetcher.config.num_threads;
-    let next_sink_block = Arc::new(AtomicU64::new(fetcher.config.start_block_height));
+    let start_block_height = if let Some(start_block_height) = fetcher.config.start_block_height {
+        start_block_height
+    } else {
+        let last_block_height = fetcher.fetch_last_block(&fetcher.config.finality).await;
+        if let Err(InterruptedError) = last_block_height {
+            return;
+        }
+        last_block_height
+            .unwrap()
+            .expect("Last block doesn't exist")
+            .block
+            .header
+            .height
+    };
+    let next_sink_block = Arc::new(AtomicU64::new(start_block_height));
     while fetcher.is_running.load(Ordering::SeqCst) {
         let start_block_height = next_sink_block.load(Ordering::SeqCst);
-        let last_block_height = fetcher.fetch_last_block().await;
+        let last_block_height = fetcher.fetch_last_block(&fetcher.config.finality).await;
         if let Err(InterruptedError) = last_block_height {
             break;
         }
@@ -273,7 +309,7 @@ pub async fn start_fetcher(
                         }
                         tracing::log::debug!(target: LOG_TARGET, "#{}: Fetching block: {}", thread_index, block_height);
                         let block =
-                            fetcher.fetch_block_by_height(block_height).await;
+                            fetcher.fetch_block_by_height(block_height, &fetcher.config.finality).await;
                         while fetcher.is_running.load(Ordering::SeqCst) {
                             let expected_block_height = next_sink_block.load(Ordering::SeqCst);
                             if expected_block_height < block_height {
