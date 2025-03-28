@@ -199,7 +199,7 @@ impl Fetcher {
             ChainId::Testnet => "https://testnet.neardata.xyz/raw/".to_string(),
         };
         let url = format!("{}{}", prefix, suffix);
-        tracing::log::debug!(target: LOG_TARGET, "#{}: Fetching archive url: {}", url);
+        tracing::log::debug!(target: LOG_TARGET, "#{}: Fetching archive url: {}", archive_block_height, url);
         while self.is_running.load(Ordering::SeqCst) {
             match self.fetch_archive(&url).await {
                 Ok(Some(archive)) => match self.parse_archive(archive) {
