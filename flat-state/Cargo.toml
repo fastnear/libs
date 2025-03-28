@@ -23,8 +23,8 @@ near-chain-configs = { workspace = true, optional = true }
 near-jsonrpc-client = { workspace = true, optional = true }
 near-jsonrpc-primitives = { workspace = true, optional = true }
 
-fastnear-primitives = { version = "0.2.0", path = "../primitives" }
-fastnear-neardata-fetcher = { version = "0.2.0", path = "../neardata-fetcher", optional = true }
+fastnear-primitives = { version = "0.3.0", path = "../primitives" }
+fastnear-neardata-fetcher = { version = "0.3.0", path = "../neardata-fetcher", optional = true }
 
 [dev-dependencies]
 tokio = { version = "1.0", features = ["macros", "rt-multi-thread"] }

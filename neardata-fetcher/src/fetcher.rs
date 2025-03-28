@@ -3,12 +3,15 @@ pub use crate::utils::*;
 use crate::*;
 use fastnear_primitives::near_primitives::types::Finality;
 use fastnear_primitives::near_primitives::views::BlockView;
+use reqwest::ClientBuilder;
 use std::io::Read;
 
 #[derive(Debug)]
 struct InterruptedError;
 
 type InterruptibleResult<T> = Result<T, InterruptedError>;
+
+pub const MAX_REDIRECTS: usize = 5;
 
 #[derive(Clone)]
 struct Fetcher {
@@ -22,15 +25,40 @@ impl Fetcher {
     where
         T: serde::de::DeserializeOwned,
     {
-        let mut request = self.client.get(url);
-        if let Some(token) = &self.config.auth_bearer_token {
-            request = request.bearer_auth(token);
+        // Manually handle redirects and adding auth headers
+        let mut url = url.to_string();
+        for _ in 0..MAX_REDIRECTS {
+            let mut request = self.client.get(&url);
+            if let Some(token) = &self.config.auth_bearer_token {
+                request = request.bearer_auth(token);
+            }
+            let response = request
+                .timeout(self.config.timeout_duration.unwrap_or(DEFAULT_TIMEOUT))
+                .send()
+                .await?;
+
+            if response.status().is_redirection() {
+                let location = response
+                    .headers()
+                    .get(reqwest::header::LOCATION)
+                    .ok_or(FetchError::RedirectError)?
+                    .to_str()
+                    .map_err(|_| FetchError::RedirectError)?;
+
+                let parsed_current =
+                    url::Url::parse(&url).map_err(|_| FetchError::RedirectError)?;
+
+                // Resolve the location relative to the current URL
+                url = parsed_current
+                    .join(location)
+                    .map_err(|_| FetchError::RedirectError)?
+                    .to_string();
+                continue;
+            }
+
+            return Ok(response.json().await?);
         }
-        let response = request
-            .timeout(self.config.timeout_duration.unwrap_or(DEFAULT_TIMEOUT))
-            .send()
-            .await?;
-        Ok(response.json().await?)
+        Err(FetchError::RedirectError)
     }
 
     pub async fn fetch_until_success<T>(&self, url: &str) -> InterruptibleResult<Option<T>>
@@ -42,6 +70,13 @@ impl Fetcher {
                 Ok(block) => return Ok(block),
                 Err(FetchError::ReqwestError(err)) => {
                     tracing::log::warn!(target: LOG_TARGET, "Failed to fetch: {}", err);
+                    tokio::time::sleep(
+                        self.config.retry_duration.unwrap_or(DEFAULT_RETRY_DURATION),
+                    )
+                    .await;
+                }
+                Err(FetchError::RedirectError) => {
+                    tracing::log::warn!(target: LOG_TARGET, "Redirect error");
                     tokio::time::sleep(
                         self.config.retry_duration.unwrap_or(DEFAULT_RETRY_DURATION),
                     )
@@ -142,22 +177,35 @@ impl Fetcher {
             padded_block_height
         );
         let prefix = match self.config.chain_id {
-            ChainId::Mainnet if archive_block_height <= MAINNET_ARCHIVE_LAST_BLOCK_HEIGHT => {
-                "https://archive.data.fastnear.com/mainnet/"
+            ChainId::Mainnet
+                if self.config.enable_r2_archive_sync
+                    && archive_block_height <= MAINNET_R2_LAST_BLOCK_HEIGHT =>
+            {
+                "https://archive.data.fastnear.com/mainnet/".to_string()
             }
-            ChainId::Testnet if archive_block_height <= TESTNET_ARCHIVE_LAST_BLOCK_HEIGHT => {
-                "https://archive.data.fastnear.com/mainnet/"
+            ChainId::Testnet
+                if self.config.enable_r2_archive_sync
+                    && archive_block_height <= TESTNET_ARCHIVE_LAST_BLOCK_HEIGHT =>
+            {
+                "https://archive.data.fastnear.com/testnet/".to_string()
             }
-            ChainId::Mainnet => "https://a1.mainnet.neardata.xyz/raw/",
-            ChainId::Testnet => "https://testnet.neardata.xyz/raw/",
+            ChainId::Mainnet => format!(
+                "https://a{}.mainnet.neardata.xyz/raw/",
+                MAINNET_ARCHIVE_BOUNDARIES
+                    .iter()
+                    .position(|&b| archive_block_height < b)
+                    .unwrap_or(MAINNET_ARCHIVE_BOUNDARIES.len())
+            ),
+            ChainId::Testnet => "https://testnet.neardata.xyz/raw/".to_string(),
         };
         let url = format!("{}{}", prefix, suffix);
+        tracing::log::debug!(target: LOG_TARGET, "#{}: Fetching archive url: {}", archive_block_height, url);
         while self.is_running.load(Ordering::SeqCst) {
             match self.fetch_archive(&url).await {
                 Ok(Some(archive)) => match self.parse_archive(archive) {
                     Ok(blocks) => return Ok(blocks),
                     Err(err) => {
-                        tracing::log::warn!(target: LOG_TARGET, "Failed to parse archive: {}", err);
+                        tracing::log::warn!(target: LOG_TARGET, "Failed to parse archive {} : {}", err);
                         tokio::time::sleep(
                             self.config.retry_duration.unwrap_or(DEFAULT_RETRY_DURATION),
                         )
@@ -167,6 +215,13 @@ impl Fetcher {
                 Ok(None) => return Ok(Vec::new()),
                 Err(FetchError::ReqwestError(err)) => {
                     tracing::log::warn!(target: LOG_TARGET, "Failed to fetch the archive: {}", err);
+                    tokio::time::sleep(
+                        self.config.retry_duration.unwrap_or(DEFAULT_RETRY_DURATION),
+                    )
+                    .await;
+                }
+                Err(FetchError::RedirectError) => {
+                    tracing::log::warn!(target: LOG_TARGET, "Redirect error");
                     tokio::time::sleep(
                         self.config.retry_duration.unwrap_or(DEFAULT_RETRY_DURATION),
                     )
@@ -245,12 +300,14 @@ async fn archive_sync(
 }
 
 pub async fn start_fetcher(
-    client: Option<Client>,
     config: FetcherConfig,
     blocks_sink: mpsc::Sender<BlockWithTxHashes>,
     is_running: Arc<AtomicBool>,
 ) {
-    let client = client.unwrap_or_else(|| Client::new());
+    let client = ClientBuilder::new()
+        .redirect(reqwest::redirect::Policy::none())
+        .build()
+        .unwrap();
     let fetcher = Fetcher {
         client,
         config,
@@ -272,9 +329,13 @@ pub async fn start_fetcher(
             .header
             .height
     };
+    let end_block_height = fetcher.config.end_block_height.unwrap_or(std::u64::MAX);
     let next_sink_block = Arc::new(AtomicU64::new(start_block_height));
     while fetcher.is_running.load(Ordering::SeqCst) {
         let start_block_height = next_sink_block.load(Ordering::SeqCst);
+        if start_block_height > end_block_height {
+            break;
+        }
         let last_block_height = fetcher
             .fetch_last_block_headers(&fetcher.config.finality)
             .await;
@@ -286,6 +347,7 @@ pub async fn start_fetcher(
             .expect("Last block doesn't exist")
             .header
             .height;
+        let last_block_height = std::cmp::min(last_block_height, end_block_height);
         let rounded_last_block_height =
             last_block_height / NUMBER_OF_BLOCKS_PER_ARCHIVE * NUMBER_OF_BLOCKS_PER_ARCHIVE;
         if !fetcher.config.disable_archive_sync
@@ -322,7 +384,7 @@ pub async fn start_fetcher(
                 tokio::spawn(async move {
                     while fetcher.is_running.load(Ordering::SeqCst) {
                         let block_height = next_fetch_block.fetch_add(1, Ordering::SeqCst);
-                        if is_backfill && block_height > last_block_height {
+                        if (is_backfill && block_height > last_block_height) || block_height > end_block_height {
                             break;
                         }
                         tracing::log::debug!(target: LOG_TARGET, "#{}: Fetching block: {}", thread_index, block_height);
