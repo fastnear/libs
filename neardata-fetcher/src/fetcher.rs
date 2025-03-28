@@ -205,7 +205,7 @@ impl Fetcher {
                 Ok(Some(archive)) => match self.parse_archive(archive) {
                     Ok(blocks) => return Ok(blocks),
                     Err(err) => {
-                        tracing::log::warn!(target: LOG_TARGET, "Failed to parse archive {} : {}", err);
+                        tracing::log::warn!(target: LOG_TARGET, "Failed to parse archive {} : {}", url, err);
                         tokio::time::sleep(
                             self.config.retry_duration.unwrap_or(DEFAULT_RETRY_DURATION),
                         )
