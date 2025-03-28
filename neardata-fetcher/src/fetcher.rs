@@ -384,7 +384,7 @@ pub async fn start_fetcher(
                 tokio::spawn(async move {
                     while fetcher.is_running.load(Ordering::SeqCst) {
                         let block_height = next_fetch_block.fetch_add(1, Ordering::SeqCst);
-                        if is_backfill && block_height > last_block_height || block_height > end_block_height {
+                        if (is_backfill && block_height > last_block_height) || block_height > end_block_height {
                             break;
                         }
                         tracing::log::debug!(target: LOG_TARGET, "#{}: Fetching block: {}", thread_index, block_height);
