@@ -177,11 +177,17 @@ impl Fetcher {
             padded_block_height
         );
         let prefix = match self.config.chain_id {
-            ChainId::Mainnet if archive_block_height < MAINNET_R2_LAST_BLOCK_HEIGHT => {
+            ChainId::Mainnet
+                if self.config.enable_r2_archive_sync
+                    && archive_block_height <= MAINNET_R2_LAST_BLOCK_HEIGHT =>
+            {
                 "https://archive.data.fastnear.com/mainnet/".to_string()
             }
-            ChainId::Testnet if archive_block_height <= TESTNET_ARCHIVE_LAST_BLOCK_HEIGHT => {
-                "https://archive.data.fastnear.com/mainnet/".to_string()
+            ChainId::Testnet
+                if self.config.enable_r2_archive_sync
+                    && archive_block_height <= TESTNET_ARCHIVE_LAST_BLOCK_HEIGHT =>
+            {
+                "https://archive.data.fastnear.com/testnet/".to_string()
             }
             ChainId::Mainnet => format!(
                 "https://a{}.mainnet.neardata.xyz/raw/",
@@ -193,12 +199,13 @@ impl Fetcher {
             ChainId::Testnet => "https://testnet.neardata.xyz/raw/".to_string(),
         };
         let url = format!("{}{}", prefix, suffix);
+        tracing::log::debug!(target: LOG_TARGET, "#{}: Fetching archive url: {}", url);
         while self.is_running.load(Ordering::SeqCst) {
             match self.fetch_archive(&url).await {
                 Ok(Some(archive)) => match self.parse_archive(archive) {
                     Ok(blocks) => return Ok(blocks),
                     Err(err) => {
-                        tracing::log::warn!(target: LOG_TARGET, "Failed to parse archive: {}", err);
+                        tracing::log::warn!(target: LOG_TARGET, "Failed to parse archive {} : {}", err);
                         tokio::time::sleep(
                             self.config.retry_duration.unwrap_or(DEFAULT_RETRY_DURATION),
                         )

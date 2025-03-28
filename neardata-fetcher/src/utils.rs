@@ -5,7 +5,7 @@ pub const LOG_TARGET: &str = "neardata-fetcher";
 pub const DEFAULT_TIMEOUT: Duration = Duration::from_secs(10);
 pub const DEFAULT_RETRY_DURATION: Duration = Duration::from_secs(1);
 
-pub(crate) const MAINNET_R2_LAST_BLOCK_HEIGHT: u64 = 142000000;
+pub(crate) const MAINNET_R2_LAST_BLOCK_HEIGHT: u64 = 141999999;
 pub(crate) const TESTNET_ARCHIVE_LAST_BLOCK_HEIGHT: u64 = 185670000;
 pub(crate) const MAINNET_ARCHIVE_BOUNDARIES: &[u64] = &[122000000, 142000000];
 

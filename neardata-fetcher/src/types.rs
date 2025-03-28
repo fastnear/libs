@@ -31,6 +31,7 @@ pub struct FetcherConfig {
     /// The Bearer token to use for authentication
     pub auth_bearer_token: Option<String>,
     pub finality: Finality,
+    pub enable_r2_archive_sync: bool,
 }
 
 #[derive(Debug, Clone)]
@@ -51,6 +52,7 @@ impl FetcherConfigBuilder {
                 disable_archive_sync: false,
                 auth_bearer_token: None,
                 finality: Finality::Final,
+                enable_r2_archive_sync: false,
             },
         }
     }
@@ -99,6 +101,12 @@ impl FetcherConfigBuilder {
 
     pub fn finality(mut self, finality: Finality) -> Self {
         self.config.finality = finality;
+        self
+    }
+
+    /// R2 endpoint has lower rate limits and should be used with authentication
+    pub fn enable_r2_archive_sync(mut self, enable_r2_archive_sync: bool) -> Self {
+        self.config.enable_r2_archive_sync = enable_r2_archive_sync;
         self
     }
 
