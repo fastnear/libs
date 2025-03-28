@@ -1,8 +1,9 @@
-use crate::*;
-use std::io::Read;
-
 pub use crate::types::*;
 pub use crate::utils::*;
+use crate::*;
+use fastnear_primitives::near_primitives::types::Finality;
+use fastnear_primitives::near_primitives::views::BlockView;
+use std::io::Read;
 
 #[derive(Debug)]
 struct InterruptedError;
@@ -17,7 +18,10 @@ struct Fetcher {
 }
 
 impl Fetcher {
-    pub async fn fetch_block(&self, url: &str) -> BlockResult {
+    pub async fn fetch<T>(&self, url: &str) -> Result<Option<T>, FetchError>
+    where
+        T: serde::de::DeserializeOwned,
+    {
         let mut request = self.client.get(url);
         if let Some(token) = &self.config.auth_bearer_token {
             request = request.bearer_auth(token);
@@ -29,15 +33,15 @@ impl Fetcher {
         Ok(response.json().await?)
     }
 
-    pub async fn fetch_block_until_success(
-        &self,
-        url: &str,
-    ) -> InterruptibleResult<Option<BlockWithTxHashes>> {
+    pub async fn fetch_until_success<T>(&self, url: &str) -> InterruptibleResult<Option<T>>
+    where
+        T: serde::de::DeserializeOwned,
+    {
         while self.is_running.load(Ordering::SeqCst) {
-            match self.fetch_block(url).await {
+            match self.fetch(url).await {
                 Ok(block) => return Ok(block),
                 Err(FetchError::ReqwestError(err)) => {
-                    tracing::log::warn!(target: LOG_TARGET, "Failed to fetch block: {}", err);
+                    tracing::log::warn!(target: LOG_TARGET, "Failed to fetch: {}", err);
                     tokio::time::sleep(
                         self.config.retry_duration.unwrap_or(DEFAULT_RETRY_DURATION),
                     )
@@ -48,17 +52,46 @@ impl Fetcher {
         Err(InterruptedError)
     }
 
-    pub async fn fetch_last_block(&self) -> InterruptibleResult<Option<BlockWithTxHashes>> {
-        self.fetch_block_until_success(&target_url("/v0/last_block/final", self.config.chain_id))
-            .await
+    pub async fn fetch_block_until_success(
+        &self,
+        url: &str,
+    ) -> InterruptibleResult<Option<BlockWithTxHashes>> {
+        self.fetch_until_success(url).await
+    }
+
+    pub async fn fetch_last_block_headers(
+        &self,
+        finality: &Finality,
+    ) -> InterruptibleResult<Option<BlockView>> {
+        self.fetch_until_success(&target_url(
+            &format!(
+                "/v0/last_block/{}/headers",
+                if finality == &Finality::Final {
+                    "final"
+                } else {
+                    "optimistic"
+                }
+            ),
+            self.config.chain_id,
+        ))
+        .await
     }
 
     pub async fn fetch_block_by_height(
         &self,
         height: BlockHeight,
+        finality: &Finality,
     ) -> InterruptibleResult<Option<BlockWithTxHashes>> {
         self.fetch_block_until_success(&target_url(
-            &format!("/v0/block/{}", height),
+            &format!(
+                "/v0/block{}/{}",
+                if finality == &Finality::Final {
+                    ""
+                } else {
+                    "_opt"
+                },
+                height
+            ),
             self.config.chain_id,
         ))
         .await
@@ -178,8 +211,9 @@ async fn archive_sync(
                         tracing::log::debug!(target: LOG_TARGET, "#{}: Fetching archive: {}", thread_index, archive_block_height);
                         let blocks =
                             fetcher.fetch_blocks_from_archive(archive_block_height).await;
+                        let mut expected_block_height = 0;
                         while fetcher.is_running.load(Ordering::SeqCst) {
-                            let expected_block_height = next_sink_block.load(Ordering::SeqCst);
+                            expected_block_height = next_sink_block.load(Ordering::SeqCst);
                             if expected_block_height < archive_block_height {
                                 tokio::time::sleep(Duration::from_millis(
                                     (archive_block_height - expected_block_height + NUMBER_OF_BLOCKS_PER_ARCHIVE - 1) / NUMBER_OF_BLOCKS_PER_ARCHIVE * NUMBER_OF_BLOCKS_PER_ARCHIVE,
@@ -194,6 +228,10 @@ async fn archive_sync(
                             break;
                         }
                         for block in blocks.expect("Can't be interrupted error") {
+                            // Skipping initial blocks from archive
+                            if block.block.header.height < expected_block_height {
+                                continue;
+                            }
                             blocks_sink.send(block).await.expect("Failed to send block");
                         }
                         next_sink_block.fetch_add(NUMBER_OF_BLOCKS_PER_ARCHIVE, Ordering::SeqCst);
@@ -219,17 +257,33 @@ pub async fn start_fetcher(
         is_running,
     };
     let max_num_threads = fetcher.config.num_threads;
-    let next_sink_block = Arc::new(AtomicU64::new(fetcher.config.start_block_height));
+    let start_block_height = if let Some(start_block_height) = fetcher.config.start_block_height {
+        start_block_height
+    } else {
+        let last_block_height = fetcher
+            .fetch_last_block_headers(&fetcher.config.finality)
+            .await;
+        if let Err(InterruptedError) = last_block_height {
+            return;
+        }
+        last_block_height
+            .unwrap()
+            .expect("Last block doesn't exist")
+            .header
+            .height
+    };
+    let next_sink_block = Arc::new(AtomicU64::new(start_block_height));
     while fetcher.is_running.load(Ordering::SeqCst) {
         let start_block_height = next_sink_block.load(Ordering::SeqCst);
-        let last_block_height = fetcher.fetch_last_block().await;
+        let last_block_height = fetcher
+            .fetch_last_block_headers(&fetcher.config.finality)
+            .await;
         if let Err(InterruptedError) = last_block_height {
             break;
         }
         let last_block_height = last_block_height
             .unwrap()
             .expect("Last block doesn't exist")
-            .block
             .header
             .height;
         let rounded_last_block_height =
@@ -273,7 +327,7 @@ pub async fn start_fetcher(
                         }
                         tracing::log::debug!(target: LOG_TARGET, "#{}: Fetching block: {}", thread_index, block_height);
                         let block =
-                            fetcher.fetch_block_by_height(block_height).await;
+                            fetcher.fetch_block_by_height(block_height, &fetcher.config.finality).await;
                         while fetcher.is_running.load(Ordering::SeqCst) {
                             let expected_block_height = next_sink_block.load(Ordering::SeqCst);
                             if expected_block_height < block_height {
