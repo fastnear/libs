@@ -5,8 +5,10 @@ pub const LOG_TARGET: &str = "neardata-fetcher";
 pub const DEFAULT_TIMEOUT: Duration = Duration::from_secs(10);
 pub const DEFAULT_RETRY_DURATION: Duration = Duration::from_secs(1);
 
-pub(crate) const MAINNET_ARCHIVE_LAST_BLOCK_HEIGHT: u64 = 138046960;
+pub(crate) const MAINNET_R2_LAST_BLOCK_HEIGHT: u64 = 142000000;
 pub(crate) const TESTNET_ARCHIVE_LAST_BLOCK_HEIGHT: u64 = 185670000;
+pub(crate) const MAINNET_ARCHIVE_BOUNDARIES: &[u64] = &[122000000, 142000000];
+
 pub(crate) const NUMBER_OF_BLOCKS_PER_ARCHIVE: u64 = 10;
 pub(crate) const ARCHIVE_SYNC_THRESHOLD: u64 = NUMBER_OF_BLOCKS_PER_ARCHIVE * 2;
 
@@ -30,6 +32,10 @@ pub async fn fetch_block_until_success(
             Err(FetchError::ReqwestError(err)) => {
                 tracing::log::warn!(target: LOG_TARGET, "Failed to fetch block: {}", err);
                 tokio::time::sleep(Duration::from_secs(1)).await;
+            }
+            Err(FetchError::RedirectError) => {
+                tracing::log::warn!(target: LOG_TARGET, "Redirect error");
+                return None;
             }
         }
     }

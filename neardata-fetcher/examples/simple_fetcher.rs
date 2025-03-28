@@ -1,7 +1,6 @@
 use fastnear_neardata_fetcher::fetcher;
 use fastnear_primitives::block_with_tx_hash::BlockWithTxHashes;
 use fastnear_primitives::near_indexer_primitives::types::Finality;
-use fastnear_primitives::near_primitives::types::BlockHeight;
 use fastnear_primitives::types::ChainId;
 use std::io;
 use std::io::Write;
@@ -37,19 +36,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         serde_json::from_str(&format!("{:?}", input("Enter finality", Some("final"))?))
             .expect("Invalid finality");
 
-    let start_block_height = input("Enter start block height (empty from latest)", Some(""))?;
-    let start_block_height: Option<BlockHeight> = if start_block_height.is_empty() {
-        None
-    } else {
-        Some(start_block_height.parse().unwrap())
-    };
+    let start_block_height = input("Enter start block height (empty - from latest)", Some(""))?;
+    let end_block_height = input("Enter end block height (empty - no end)", Some(""))?;
     let num_threads = input("Enter the number of threads", Some("8"))?;
     let auth_bearer_token = input("Enter the auth bearer token (optional)", None)?;
-    let auth_bearer_token = if auth_bearer_token.is_empty() {
-        None
-    } else {
-        Some(auth_bearer_token)
-    };
 
     println!("Starting fetcher");
 
@@ -62,24 +52,25 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     })
     .expect("Error setting Ctrl+C handler");
 
-    let fetcher_config = fetcher::FetcherConfig {
-        num_threads: num_threads.parse::<u64>().unwrap(),
-        start_block_height,
-        chain_id,
-        timeout_duration: None,
-        retry_duration: None,
-        disable_archive_sync: false,
-        auth_bearer_token,
-        finality,
-    };
+    let mut fetcher_config_builder = fetcher::FetcherConfigBuilder::new()
+        .num_threads(num_threads.parse::<u64>().unwrap())
+        .chain_id(chain_id)
+        .finality(finality);
+    if !start_block_height.is_empty() {
+        fetcher_config_builder =
+            fetcher_config_builder.start_block_height(start_block_height.parse().unwrap());
+    }
+    if !end_block_height.is_empty() {
+        fetcher_config_builder =
+            fetcher_config_builder.end_block_height(end_block_height.parse().unwrap());
+    }
+    if !auth_bearer_token.is_empty() {
+        fetcher_config_builder = fetcher_config_builder.auth_bearer_token(auth_bearer_token);
+    }
+    let fetcher_config = fetcher_config_builder.build();
 
     let (sender, receiver) = mpsc::channel(100);
-    tokio::spawn(fetcher::start_fetcher(
-        None,
-        fetcher_config,
-        sender,
-        is_running,
-    ));
+    tokio::spawn(fetcher::start_fetcher(fetcher_config, sender, is_running));
 
     listen_blocks(receiver).await;
 
