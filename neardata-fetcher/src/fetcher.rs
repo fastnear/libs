@@ -289,7 +289,7 @@ async fn archive_sync(
                             }
                             blocks_sink.send(block).await.expect("Failed to send block");
                         }
-                        next_sink_block.fetch_add(NUMBER_OF_BLOCKS_PER_ARCHIVE, Ordering::SeqCst);
+                        next_sink_block.swap(archive_block_height + NUMBER_OF_BLOCKS_PER_ARCHIVE, Ordering::SeqCst);
                     }
                 })
             })
