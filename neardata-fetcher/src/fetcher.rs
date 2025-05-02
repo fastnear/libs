@@ -304,10 +304,14 @@ pub async fn start_fetcher(
     blocks_sink: mpsc::Sender<BlockWithTxHashes>,
     is_running: Arc<AtomicBool>,
 ) {
-    let client = ClientBuilder::new()
-        .redirect(reqwest::redirect::Policy::none())
-        .build()
-        .unwrap();
+    let client =
+        ClientBuilder::new()
+            .redirect(reqwest::redirect::Policy::none())
+            .user_agent(config.user_agent.clone().unwrap_or_else(|| {
+                format!("fastnear-neardata-fetcher/{}", env!("CARGO_PKG_VERSION"))
+            }))
+            .build()
+            .unwrap();
     let fetcher = Fetcher {
         client,
         config,
