@@ -1,5 +1,5 @@
 [workspace.package]
-version = "2.7.0-rc.1"
+version = "0.31.0-rc.2"
 authors = ["Fastnear Inc <hello@fastnear.com>"]
 edition = "2021"
 repository = "https://github.com/fastnear/libs"
@@ -15,9 +15,9 @@ members = [
 ]
 
 [workspace.dependencies]
-near-indexer-primitives = { git = "https://github.com/fastnear/nearcore", rev = "91ea3a2a915807a7479ad155def20c676efd7d8a" }
-near-primitives = { git = "https://github.com/fastnear/nearcore", rev = "91ea3a2a915807a7479ad155def20c676efd7d8a" }
-near-crypto = { git = "https://github.com/fastnear/nearcore", rev = "91ea3a2a915807a7479ad155def20c676efd7d8a" }
+near-indexer-primitives = "0.31.0-rc.2"
+near-primitives = "0.31.0-rc.2"
+near-crypto = "0.31.0-rc.2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 serde_repr = "0.1"
@@ -27,8 +27,8 @@ tokio = { version = "1", features = ["time", "sync", "rt-multi-thread"] }
 tracing = { version = "0.1.13", features = ["log"] }
 borsh = { version = "1.5.0", features = ["derive"] }
 near-jsonrpc-client = "0.17"
-near-jsonrpc-primitives = { git = "https://github.com/fastnear/nearcore", rev = "91ea3a2a915807a7479ad155def20c676efd7d8a" }
-near-chain-configs = { git = "https://github.com/fastnear/nearcore", rev = "91ea3a2a915807a7479ad155def20c676efd7d8a" }
+near-jsonrpc-primitives = "0.31.0-rc.2"
+near-chain-configs = "0.31.0-rc.2"
 tar = "0.4.43"
 flate2 = "1.0"
 url = "2.5.4"
