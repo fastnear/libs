@@ -33,6 +33,9 @@ pub struct FetcherConfig {
     pub finality: Finality,
     pub enable_r2_archive_sync: bool,
     pub user_agent: Option<String>,
+    /// The number of threads for regular fetching. It will attempt to fetch future blocks.
+    /// Note, the number can't be too high, as it will be denied by the server.
+    pub num_lookahead_threads: u64,
 }
 
 #[derive(Debug, Clone)]
@@ -55,6 +58,7 @@ impl FetcherConfigBuilder {
                 finality: Finality::Final,
                 enable_r2_archive_sync: false,
                 user_agent: None,
+                num_lookahead_threads: 4,
             },
         }
     }

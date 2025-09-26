@@ -318,6 +318,7 @@ pub async fn start_fetcher(
         is_running,
     };
     let max_num_threads = fetcher.config.num_threads;
+    let num_lookahead_threads = fetcher.config.num_lookahead_threads;
     let start_block_height = if let Some(start_block_height) = fetcher.config.start_block_height {
         start_block_height
     } else {
@@ -369,7 +370,11 @@ pub async fn start_fetcher(
         }
         let next_fetch_block = Arc::new(AtomicU64::new(start_block_height));
         let is_backfill = last_block_height > start_block_height + max_num_threads;
-        let num_threads = if is_backfill { max_num_threads } else { 1 };
+        let num_threads = if is_backfill {
+            max_num_threads
+        } else {
+            num_lookahead_threads
+        };
         tracing::log::info!(
             target: LOG_TARGET,
             "Start fetching from block {} to block {} with {} threads. Backfill: {:?}",
