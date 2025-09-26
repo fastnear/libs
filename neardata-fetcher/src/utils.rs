@@ -37,6 +37,14 @@ pub async fn fetch_block_until_success(
                 tracing::log::warn!(target: LOG_TARGET, "Redirect error");
                 return None;
             }
+            Err(FetchError::RateLimitError) => {
+                tracing::log::warn!(target: LOG_TARGET, "Rate limited, retrying...");
+                tokio::time::sleep(Duration::from_secs(1)).await;
+            }
+            Err(FetchError::UnexpectedStatus(status)) => {
+                tracing::log::warn!(target: LOG_TARGET, "Unexpected status code: {}", status);
+                tokio::time::sleep(Duration::from_secs(1)).await;
+            }
         }
     }
 }
