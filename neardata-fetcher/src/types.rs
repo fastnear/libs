@@ -1,6 +1,7 @@
 use crate::*;
 
 use fastnear_primitives::near_primitives::types::Finality;
+use reqwest::StatusCode;
 use std::time::Duration;
 
 pub type BlockResult = Result<Option<BlockWithTxHashes>, FetchError>;
@@ -8,7 +9,9 @@ pub type BlockResult = Result<Option<BlockWithTxHashes>, FetchError>;
 #[derive(Debug)]
 pub enum FetchError {
     ReqwestError(reqwest::Error),
+    RateLimitError,
     RedirectError,
+    UnexpectedStatus(StatusCode),
 }
 
 impl From<reqwest::Error> for FetchError {
