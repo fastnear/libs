@@ -3,7 +3,7 @@ pub use crate::utils::*;
 use crate::*;
 use fastnear_primitives::near_primitives::types::Finality;
 use fastnear_primitives::near_primitives::views::BlockView;
-use reqwest::ClientBuilder;
+use reqwest::{ClientBuilder, StatusCode};
 use std::io::Read;
 
 #[derive(Debug)]
@@ -56,7 +56,11 @@ impl Fetcher {
                 continue;
             }
 
-            return Ok(response.json().await?);
+            return match response.status() {
+                status if status.is_success() => Ok(response.json().await?),
+                StatusCode::TOO_MANY_REQUESTS => Err(FetchError::RateLimitError),
+                status => Err(FetchError::UnexpectedStatus(status)),
+            };
         }
         Err(FetchError::RedirectError)
     }
@@ -77,6 +81,20 @@ impl Fetcher {
                 }
                 Err(FetchError::RedirectError) => {
                     tracing::log::warn!(target: LOG_TARGET, "Redirect error");
+                    tokio::time::sleep(
+                        self.config.retry_duration.unwrap_or(DEFAULT_RETRY_DURATION),
+                    )
+                    .await;
+                }
+                Err(FetchError::RateLimitError) => {
+                    tracing::log::warn!(target: LOG_TARGET, "Rate limited when fetching: {}", url);
+                    tokio::time::sleep(
+                        self.config.retry_duration.unwrap_or(DEFAULT_RETRY_DURATION),
+                    )
+                    .await;
+                }
+                Err(FetchError::UnexpectedStatus(status)) => {
+                    tracing::log::warn!(target: LOG_TARGET, "Unexpected status when fetching {}: {}", url, status);
                     tokio::time::sleep(
                         self.config.retry_duration.unwrap_or(DEFAULT_RETRY_DURATION),
                     )
@@ -141,10 +159,17 @@ impl Fetcher {
             .timeout(self.config.timeout_duration.unwrap_or(DEFAULT_TIMEOUT))
             .send()
             .await?;
-        if response.status() == 404 {
-            return Ok(None);
+        match response.status() {
+            StatusCode::NOT_FOUND => {
+                tracing::log::debug!(target: LOG_TARGET, "Archive not found: {}", url);
+                Ok(None)
+            }
+            StatusCode::TOO_MANY_REQUESTS => Err(FetchError::RateLimitError),
+            status if status.is_success() => {
+                Ok(response.bytes().await.map(|b| Some(b.to_vec()))?)
+            }
+            status => Err(FetchError::UnexpectedStatus(status)),
         }
-        Ok(response.bytes().await.map(|b| Some(b.to_vec()))?)
     }
 
     fn parse_archive(&self, archive: Vec<u8>) -> Result<Vec<BlockWithTxHashes>, String> {
@@ -222,6 +247,20 @@ impl Fetcher {
                 }
                 Err(FetchError::RedirectError) => {
                     tracing::log::warn!(target: LOG_TARGET, "Redirect error");
+                    tokio::time::sleep(
+                        self.config.retry_duration.unwrap_or(DEFAULT_RETRY_DURATION),
+                    )
+                    .await;
+                }
+                Err(FetchError::RateLimitError) => {
+                    tracing::log::warn!(target: LOG_TARGET, "Rate limited when fetching archive: {}", url);
+                    tokio::time::sleep(
+                        self.config.retry_duration.unwrap_or(DEFAULT_RETRY_DURATION),
+                    )
+                    .await;
+                }
+                Err(FetchError::UnexpectedStatus(status)) => {
+                    tracing::log::warn!(target: LOG_TARGET, "Unexpected status when fetching archive {}: {}", url, status);
                     tokio::time::sleep(
                         self.config.retry_duration.unwrap_or(DEFAULT_RETRY_DURATION),
                     )
@@ -318,6 +357,7 @@ pub async fn start_fetcher(
         is_running,
     };
     let max_num_threads = fetcher.config.num_threads;
+    let num_lookahead_threads = fetcher.config.num_lookahead_threads;
     let start_block_height = if let Some(start_block_height) = fetcher.config.start_block_height {
         start_block_height
     } else {
@@ -369,7 +409,11 @@ pub async fn start_fetcher(
         }
         let next_fetch_block = Arc::new(AtomicU64::new(start_block_height));
         let is_backfill = last_block_height > start_block_height + max_num_threads;
-        let num_threads = if is_backfill { max_num_threads } else { 1 };
+        let num_threads = if is_backfill {
+            max_num_threads
+        } else {
+            num_lookahead_threads
+        };
         tracing::log::info!(
             target: LOG_TARGET,
             "Start fetching from block {} to block {} with {} threads. Backfill: {:?}",

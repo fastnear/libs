@@ -1,6 +1,7 @@
 use crate::*;
 
 use fastnear_primitives::near_primitives::types::Finality;
+use reqwest::StatusCode;
 use std::time::Duration;
 
 pub type BlockResult = Result<Option<BlockWithTxHashes>, FetchError>;
@@ -8,7 +9,9 @@ pub type BlockResult = Result<Option<BlockWithTxHashes>, FetchError>;
 #[derive(Debug)]
 pub enum FetchError {
     ReqwestError(reqwest::Error),
+    RateLimitError,
     RedirectError,
+    UnexpectedStatus(StatusCode),
 }
 
 impl From<reqwest::Error> for FetchError {
@@ -33,6 +36,9 @@ pub struct FetcherConfig {
     pub finality: Finality,
     pub enable_r2_archive_sync: bool,
     pub user_agent: Option<String>,
+    /// The number of threads for regular fetching. It will attempt to fetch future blocks.
+    /// Note, the number can't be too high, as it will be denied by the server.
+    pub num_lookahead_threads: u64,
 }
 
 #[derive(Debug, Clone)]
@@ -55,6 +61,7 @@ impl FetcherConfigBuilder {
                 finality: Finality::Final,
                 enable_r2_archive_sync: false,
                 user_agent: None,
+                num_lookahead_threads: 4,
             },
         }
     }
