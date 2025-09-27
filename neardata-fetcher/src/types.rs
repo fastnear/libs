@@ -126,7 +126,7 @@ impl FetcherConfigBuilder {
 
     pub fn num_lookahead_threads(mut self, num_lookahead_threads: u64) -> Self {
         if num_lookahead_threads > 12 {
-            tracing::warn!(
+            tracing::warn!(target: "neardata-fetcher",
                 "num_lookahead_threads is too high, recommended to be <= 12 to avoid server denial"
             );
         }
