@@ -124,6 +124,16 @@ impl FetcherConfigBuilder {
         self
     }
 
+    pub fn num_lookahead_threads(mut self, num_lookahead_threads: u64) -> Self {
+        if num_lookahead_threads > 12 {
+            tracing::warn!(
+                "num_lookahead_threads is too high, recommended to be <= 12 to avoid server denial"
+            );
+        }
+        self.config.num_lookahead_threads = num_lookahead_threads;
+        self
+    }
+
     pub fn build(self) -> FetcherConfig {
         self.config
     }

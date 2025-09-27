@@ -291,48 +291,48 @@ async fn archive_sync(
     ));
     // starting backfill with multiple threads
     let handles = (0..fetcher.config.num_threads)
-            .map(|thread_index| {
-                let fetcher = fetcher.clone();
-                let blocks_sink = blocks_sink.clone();
-                let next_fetch_archive_height = next_fetch_archive_height.clone();
-                let next_sink_block = next_sink_block.clone();
-                tokio::spawn(async move {
-                    while fetcher.is_running.load(Ordering::SeqCst) {
-                        let archive_block_height = next_fetch_archive_height.fetch_add(NUMBER_OF_BLOCKS_PER_ARCHIVE, Ordering::SeqCst);
-                        if archive_block_height >= end_block_height {
-                            break;
-                        }
-                        tracing::log::debug!(target: LOG_TARGET, "#{}: Fetching archive: {}", thread_index, archive_block_height);
-                        let blocks =
-                            fetcher.fetch_blocks_from_archive(archive_block_height).await;
-                        let mut expected_block_height = 0;
-                        while fetcher.is_running.load(Ordering::SeqCst) {
-                            expected_block_height = next_sink_block.load(Ordering::SeqCst);
-                            if expected_block_height < archive_block_height {
-                                tokio::time::sleep(Duration::from_millis(
-                                    (archive_block_height - expected_block_height + NUMBER_OF_BLOCKS_PER_ARCHIVE - 1) / NUMBER_OF_BLOCKS_PER_ARCHIVE * NUMBER_OF_BLOCKS_PER_ARCHIVE,
-                                ))
-                                    .await;
-                            } else {
-                                tracing::log::debug!(target: LOG_TARGET, "#{}: Sending blocks from archive: {}", thread_index, archive_block_height);
-                                break;
-                            }
-                        }
-                        if !fetcher.is_running.load(Ordering::SeqCst) {
-                            break;
-                        }
-                        for block in blocks.expect("Can't be interrupted error") {
-                            // Skipping initial blocks from archive
-                            if block.block.header.height < expected_block_height {
-                                continue;
-                            }
-                            blocks_sink.send(block).await.expect("Failed to send block");
-                        }
-                        next_sink_block.swap(archive_block_height + NUMBER_OF_BLOCKS_PER_ARCHIVE, Ordering::SeqCst);
+        .map(|thread_index| {
+            let fetcher = fetcher.clone();
+            let blocks_sink = blocks_sink.clone();
+            let next_fetch_archive_height = next_fetch_archive_height.clone();
+            let next_sink_block = next_sink_block.clone();
+            tokio::spawn(async move {
+                while fetcher.is_running.load(Ordering::SeqCst) {
+                    let archive_block_height = next_fetch_archive_height.fetch_add(NUMBER_OF_BLOCKS_PER_ARCHIVE, Ordering::SeqCst);
+                    if archive_block_height >= end_block_height {
+                        break;
                     }
-                })
+                    tracing::log::debug!(target: LOG_TARGET, "#{}: Fetching archive: {}", thread_index, archive_block_height);
+                    let blocks =
+                        fetcher.fetch_blocks_from_archive(archive_block_height).await;
+                    let mut expected_block_height = 0;
+                    while fetcher.is_running.load(Ordering::SeqCst) {
+                        expected_block_height = next_sink_block.load(Ordering::SeqCst);
+                        if expected_block_height < archive_block_height {
+                            tokio::time::sleep(Duration::from_millis(
+                                (archive_block_height - expected_block_height + NUMBER_OF_BLOCKS_PER_ARCHIVE - 1) / NUMBER_OF_BLOCKS_PER_ARCHIVE * NUMBER_OF_BLOCKS_PER_ARCHIVE,
+                            ))
+                                .await;
+                        } else {
+                            tracing::log::debug!(target: LOG_TARGET, "#{}: Sending blocks from archive: {}", thread_index, archive_block_height);
+                            break;
+                        }
+                    }
+                    if !fetcher.is_running.load(Ordering::SeqCst) {
+                        break;
+                    }
+                    for block in blocks.expect("Can't be interrupted error") {
+                        // Skipping initial blocks from archive
+                        if block.block.header.height < expected_block_height {
+                            continue;
+                        }
+                        blocks_sink.send(block).await.expect("Failed to send block");
+                    }
+                    next_sink_block.swap(archive_block_height + NUMBER_OF_BLOCKS_PER_ARCHIVE, Ordering::SeqCst);
+                }
             })
-            .collect::<Vec<_>>();
+        })
+        .collect::<Vec<_>>();
     for handle in handles {
         handle.await.expect("Failed to join fetching thread");
     }
