@@ -39,6 +39,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let start_block_height = input("Enter start block height (empty - from latest)", Some(""))?;
     let end_block_height = input("Enter end block height (empty - no end)", Some(""))?;
     let num_threads = input("Enter the number of threads", Some("8"))?;
+    let num_lookahead_threads = input("Enter the number of lookahead threads", Some("4"))?;
     let auth_bearer_token = input("Enter the auth bearer token (optional)", None)?;
 
     println!("Starting fetcher");
@@ -54,6 +55,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let mut fetcher_config_builder = fetcher::FetcherConfigBuilder::new()
         .num_threads(num_threads.parse::<u64>().unwrap())
+        .num_lookahead_threads(num_lookahead_threads.parse::<u64>().unwrap())
         .chain_id(chain_id)
         .finality(finality);
     if !start_block_height.is_empty() {
