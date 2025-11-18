@@ -202,18 +202,6 @@ impl Fetcher {
             padded_block_height
         );
         let prefix = match self.config.chain_id {
-            ChainId::Mainnet
-                if self.config.enable_r2_archive_sync
-                    && archive_block_height <= MAINNET_R2_LAST_BLOCK_HEIGHT =>
-            {
-                "https://archive.data.fastnear.com/mainnet/".to_string()
-            }
-            ChainId::Testnet
-                if self.config.enable_r2_archive_sync
-                    && archive_block_height <= TESTNET_ARCHIVE_LAST_BLOCK_HEIGHT =>
-            {
-                "https://archive.data.fastnear.com/testnet/".to_string()
-            }
             ChainId::Mainnet => format!(
                 "https://a{}.mainnet.neardata.xyz/raw/",
                 MAINNET_ARCHIVE_BOUNDARIES

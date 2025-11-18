@@ -34,7 +34,6 @@ pub struct FetcherConfig {
     /// The Bearer token to use for authentication
     pub auth_bearer_token: Option<String>,
     pub finality: Finality,
-    pub enable_r2_archive_sync: bool,
     pub user_agent: Option<String>,
     /// The number of threads for regular fetching. It will attempt to fetch future blocks.
     /// Note, the number can't be too high, as it will be denied by the server.
@@ -59,7 +58,6 @@ impl FetcherConfigBuilder {
                 disable_archive_sync: false,
                 auth_bearer_token: None,
                 finality: Finality::Final,
-                enable_r2_archive_sync: false,
                 user_agent: None,
                 num_lookahead_threads: 4,
             },
@@ -113,9 +111,14 @@ impl FetcherConfigBuilder {
         self
     }
 
-    /// R2 endpoint has lower rate limits and should be used with authentication
-    pub fn enable_r2_archive_sync(mut self, enable_r2_archive_sync: bool) -> Self {
-        self.config.enable_r2_archive_sync = enable_r2_archive_sync;
+    #[deprecated(
+        since = "0.34.0",
+        note = "The R2 archive sync is deprecated and should not be used anymore."
+    )]
+    pub fn enable_r2_archive_sync(self, enable_r2_archive_sync: bool) -> Self {
+        if enable_r2_archive_sync {
+            panic!("The R2 archive sync is deprecated and should not be used anymore.");
+        }
         self
     }
 
