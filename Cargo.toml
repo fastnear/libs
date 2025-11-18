@@ -1,5 +1,5 @@
 [workspace.package]
-version = "0.34.0-rc.1"
+version = "0.34.0-rc.1-fix"
 authors = ["Fastnear Inc <hello@fastnear.com>"]
 edition = "2021"
 repository = "https://github.com/fastnear/libs"
