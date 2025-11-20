@@ -4,4 +4,5 @@ set -e
 
 cd "`dirname $0`"
 
-cargo publish -p fastnear-primitives fastnear-neardata-fetcher
+cargo publish -p fastnear-primitives
+cargo publish -p fastnear-neardata-fetcher
