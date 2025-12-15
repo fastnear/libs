@@ -5,7 +5,7 @@ pub const LOG_TARGET: &str = "neardata-fetcher";
 pub const DEFAULT_TIMEOUT: Duration = Duration::from_secs(10);
 pub const DEFAULT_RETRY_DURATION: Duration = Duration::from_secs(1);
 
-pub(crate) const MAINNET_ARCHIVE_BOUNDARIES: &[u64] = &[122000000, 142000000];
+pub(crate) const MAINNET_ARCHIVE_BOUNDARIES: &[u64] = &[122000000, 142000000, 177000000];
 
 pub(crate) const NUMBER_OF_BLOCKS_PER_ARCHIVE: u64 = 10;
 pub(crate) const ARCHIVE_SYNC_THRESHOLD: u64 = NUMBER_OF_BLOCKS_PER_ARCHIVE * 2;
