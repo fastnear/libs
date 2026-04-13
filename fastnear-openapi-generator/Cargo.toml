@@ -1,0 +1,23 @@
+[package]
+name = "fastnear-openapi-generator"
+version = "0.2.0"
+authors.workspace = true
+edition.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Small shared helpers for generating checked-in OpenAPI YAML from typed FastNear service DTOs."
+readme = "README.md"
+homepage = "https://fastnear.com"
+documentation = "https://docs.rs/fastnear-openapi-generator"
+keywords = ["fastnear", "openapi", "generator", "docs"]
+categories = ["development-tools", "web-programming"]
+
+[dependencies]
+anyhow = "1"
+schemars = "1.2.1"
+serde_json.workspace = true
+serde_yaml = "0.9"
+
+[dev-dependencies]
+serde = { version = "1", features = ["derive"] }
