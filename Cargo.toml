@@ -9,7 +9,7 @@ license = "MIT OR Apache-2.0"
 [workspace]
 resolver = "2"
 members = [
-    "fastnear-openapi-generator",
+    "openapi-generator",
     "flat-state",
     "neardata-fetcher",
     "primitives"
