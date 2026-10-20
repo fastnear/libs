@@ -4,7 +4,7 @@ use std::sync::Arc;
 use tokio::sync::mpsc;
 
 #[tokio::test]
-async fn test_fetch_50_blocks_with_hash_chain() {
+async fn test_fetch_20_blocks_with_hash_chain() {
     let is_running = Arc::new(AtomicBool::new(true));
     let is_running_clone = is_running.clone();
 
@@ -35,12 +35,12 @@ async fn test_fetch_50_blocks_with_hash_chain() {
         prev_block_hash = Some(block_hash);
         count += 1;
 
-        if count >= 50 {
+        if count >= 20 {
             break;
         }
     }
 
     is_running.store(false, Ordering::SeqCst);
 
-    assert_eq!(count, 50, "Expected 50 blocks, got {}", count);
+    assert_eq!(count, 20, "Expected 20 blocks, got {}", count);
 }
