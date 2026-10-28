@@ -9,6 +9,7 @@ license = "MIT OR Apache-2.0"
 [workspace]
 resolver = "2"
 members = [
+    "openapi-generator",
     "flat-state",
     "neardata-fetcher",
     "primitives"
@@ -32,4 +33,3 @@ near-chain-configs = "0.32.0"
 tar = "0.4.43"
 flate2 = "1.0"
 url = "2.5.4"
-
